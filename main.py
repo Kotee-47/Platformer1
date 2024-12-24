@@ -1,6 +1,4 @@
 import pygame
-
-
 from data import functions
 from data import classes
 

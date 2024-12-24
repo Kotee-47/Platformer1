@@ -1,18 +1,26 @@
 import pygame
+from pygame.examples.grid import TILE_SIZE
+
 from data import functions
 from data import classes
 
+
+ENVIRONMENT_SPRITES = pygame.sprite.Group()
+DECOR_SPRITES = pygame.sprite.Group()
+CELL_SIZE = 16
+
+
 def main():
     pygame.init()
-    size = width, height = 736, 480
-    board = classes.Board(23, 15)
+    size = width, height = 640, 320
+    board = classes.Board(ENVIRONMENT_SPRITES)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     pygame.display.set_caption("erm")
     running = True
     dt = 0
     fps = 30
-    board.set_view(0, 0, 32)
+    board.set_view(0, 0)
 
     player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
@@ -25,6 +33,9 @@ def main():
 
         screen.fill("black")
         board.render(screen)
+
+        ENVIRONMENT_SPRITES.draw(screen)
+
         pygame.display.flip()
         dt = clock.tick(fps) / 1000
 

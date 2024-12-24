@@ -1,5 +1,5 @@
 import pygame
-from pygame.examples.grid import TILE_SIZE
+
 
 from data import functions
 from data import classes
@@ -13,7 +13,7 @@ CELL_SIZE = 16
 def main():
     pygame.init()
     size = width, height = 640, 320
-    board = classes.Board(ENVIRONMENT_SPRITES)
+    board = classes.Board(ENVIRONMENT_SPRITES, CELL_SIZE)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     pygame.display.set_caption("erm")
@@ -21,8 +21,6 @@ def main():
     dt = 0
     fps = 30
     board.set_view(0, 0)
-
-    player_pos = pygame.Vector2(screen.get_width() / 2, screen.get_height() / 2)
 
     while running:
         for event in pygame.event.get():

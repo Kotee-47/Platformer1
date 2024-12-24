@@ -3,20 +3,22 @@ from data import functions
 
 
 class environment(pygame.sprite.Sprite):
-    def __init__(self, picture, group, x, y, tsize=16):
+    def __init__(self, picture, group, x, y, cell_size=16):
         self.image = functions.load_image(picture)
+        self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
         super().__init__(group)
-        self.rect = x * tsize, y * tsize
+        self.rect = x * cell_size, y * cell_size
         self.mask = pygame.mask.from_surface(self.image)
 
 
 class Board:
-    def __init__(self, envgroup):
+    def __init__(self, envgroup, cell_size=16):
+        self.cell_size = cell_size
         self.envgroup = envgroup
-        self.board = [[0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+        self.board = [[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
+                      [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
                       [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
@@ -38,10 +40,9 @@ class Board:
         self.left = 10
         self.top = 10
 
-    def set_view(self, left=10, top=10, cell_size=16):
+    def set_view(self, left=10, top=10):
         self.left = left
         self.top = top
-        self.cell_size = cell_size
 
     def render(self, screen):
         self.screen = screen
@@ -50,15 +51,15 @@ class Board:
                 if self.board[y][x] == 0:
                     pass
                 elif self.board[y][x] == 1:
-                    sprite = environment('images/blocks/environment/1_stone_surface.png', self.envgroup, x, y)
+                    sprite = environment('images/blocks/environment/1_stone_surface.png', self.envgroup, x, y, self.cell_size)
                 elif self.board[y][x] == 2:
-                    sprite = environment('images/blocks/environment/2_stone.png', self.envgroup, x, y)
+                    sprite = environment('images/blocks/environment/2_stone.png', self.envgroup, x, y, self.cell_size)
                 elif self.board[y][x] == 3:
-                    sprite = environment('images/blocks/environment/3_stone_corner.png', self.envgroup, x, y)
+                    sprite = environment('images/blocks/environment/3_stone_corner.png', self.envgroup, x, y, self.cell_size)
                 elif self.board[y][x] == 4:
-                    sprite = environment('images/blocks/decor/4_moss.png', self.envgroup, x, y)
+                    sprite = environment('images/blocks/decor/4_moss.png', self.envgroup, x, y, self.cell_size)
                 elif self.board[y][x] == 5:
-                    sprite = environment('images/blocks/environment/5_stone_surface_moss.png', self.envgroup, x, y)
+                    sprite = environment('images/blocks/environment/5_stone_surface_moss.png', self.envgroup, x, y, self.cell_size)
 
 
     def get_click(self, mouse_pos):

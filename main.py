@@ -5,13 +5,13 @@ from data import classes
 
 ENVIRONMENT_SPRITES = pygame.sprite.Group()
 DECOR_SPRITES = pygame.sprite.Group()
-CELL_SIZE = 16
+CELL_SIZE = 32
 
 
 def main():
     pygame.init()
-    size = width, height = 640, 320
-    board = classes.Board(ENVIRONMENT_SPRITES, CELL_SIZE)
+    size = width, height = 1088, 704
+    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, CELL_SIZE)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     pygame.display.set_caption("erm")

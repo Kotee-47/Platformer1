@@ -2,7 +2,7 @@ import pygame
 from data import functions
 
 
-class environment(pygame.sprite.Sprite):
+class Environment(pygame.sprite.Sprite):
     def __init__(self, picture, group, x, y, cell_size=16):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
@@ -16,28 +16,11 @@ class Board:
         self.cell_size = cell_size
         self.envgroup = envgroup
         self.decgroup = decgroup
-        self.board = [[2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 1],
-                      [0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 4, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 5, 5, 5, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [0, 0, 0, 4, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [1, 1, 5, 5, 5, 1, 1, 1, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [2, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0],
-                      [5, 2, 2, 2, 2, 2, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0], ]
+        file = open('files/levels/test_field.txt', 'rt')
+        self.board = file.read().split('p')
+        for i in range(0, len(self.board)):
+            self.board[i] = self.board[i].split()
+        file.close()
         self.width = len(self.board[0])
         self.height = len(self.board)
         self.left = 10
@@ -51,22 +34,22 @@ class Board:
         self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
-                if self.board[y][x] == 0:
+                if self.board[y][x] == '0':
                     pass
-                elif self.board[y][x] == 1:
-                    sprite = environment('images/blocks/environment/1_stone_surface.png', self.envgroup, x, y,
+                elif self.board[y][x] == '1':
+                    sprite = Environment('images/blocks/environment/1_stone_surface.png', self.envgroup, x, y,
                                          self.cell_size)
-                elif self.board[y][x] == 2:
-                    sprite = environment('images/blocks/environment/2_stone.png', self.envgroup, x, y,
+                elif self.board[y][x] == '2':
+                    sprite = Environment('images/blocks/environment/2_stone.png', self.envgroup, x, y,
                                          self.cell_size)
-                elif self.board[y][x] == 3:
-                    sprite = environment('images/blocks/environment/3_stone_corner.png', self.envgroup, x, y,
+                elif self.board[y][x] == '3':
+                    sprite = Environment('images/blocks/environment/3_stone_corner.png', self.envgroup, x, y,
                                          self.cell_size)
-                elif self.board[y][x] == 4:
-                    sprite = environment('images/blocks/decor/4_moss.png', self.decgroup, x, y,
+                elif self.board[y][x] == '4':
+                    sprite = Environment('images/blocks/decor/4_moss.png', self.decgroup, x, y,
                                          self.cell_size)
-                elif self.board[y][x] == 5:
-                    sprite = environment('images/blocks/environment/5_stone_surface_moss.png', self.envgroup,
+                elif self.board[y][x] == '5':
+                    sprite = Environment('images/blocks/environment/5_stone_surface_moss.png', self.envgroup,
                                          x, y, self.cell_size)
 
     def get_click(self, mouse_pos):
@@ -85,10 +68,11 @@ class Board:
         self.render(self.screen)
 
 
-class Player:
+class Player(pygame.sprite.Sprite):
     def __init__(self, picture, group, x, y, cell_size=16):
-        self.image = functions.load_image(picture)
-        self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
+        # self.image = functions.load_image(picture)
+        self.image = pygame.image.load(picture)
+        self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group)
         self.rect = x * cell_size, y * cell_size
         self.mask = pygame.mask.from_surface(self.image)

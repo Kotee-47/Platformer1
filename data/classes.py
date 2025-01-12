@@ -7,6 +7,7 @@ class Environment(pygame.sprite.Sprite):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
         super().__init__(group)
+        self.startrect = x * cell_size, y * cell_size
         self.rect = x * cell_size, y * cell_size
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -26,9 +27,6 @@ class Board:
         self.left = 10
         self.top = 10
 
-    def set_view(self, left=10, top=10):
-        self.left = left
-        self.top = top
 
     def render(self, screen):
         self.screen = screen
@@ -76,3 +74,58 @@ class Player(pygame.sprite.Sprite):
         super().__init__(group)
         self.rect = x * cell_size, y * cell_size
         self.mask = pygame.mask.from_surface(self.image)
+        self.y_speed = 0
+        self.x_speed = 0
+        self.left_player = False
+        self.left_move = False
+        self.on_surf = False
+
+    def update(self, env, player, dt):
+        self.on_surf = False
+        for i in env:
+            if pygame.sprite.collide_mask(player, i):
+                self.on_surf = True
+        if not self.on_surf:
+            if self.y_speed < 200:
+                self.y_speed += 10
+            else:
+                self.y_speed = 200
+        else:
+            if self.y_speed > 0:
+                self.y_speed = 0
+
+        if self.x_speed > 100:
+            self.x_speed = 100
+        if self.x_speed < -100:
+            self.x_speed = -100
+
+        player.rect = (player.rect[0] + self.x_speed * dt, player.rect[1] + self.y_speed * dt)
+
+    def left(self, player):
+        if not self.left_player:
+            for i in player:
+                pygame.transform.flip(i.image, True, False)
+                self.left_player = True
+        self.x_speed = -150
+        self.left_move = True
+
+    def right(self, player):
+        if self.left_player:
+            for i in player:
+                pygame.transform.flip(i.image, True, False)
+                self.left_player = False
+        self.x_speed = 150
+        self.left_move = False
+
+    def jump(self):
+        if self.on_surf:
+            if self.y_speed != 400:
+                self.y_speed = -400
+
+    def left_stop(self):
+        if self.x_speed < 0:
+            self.x_speed = 0
+
+    def right_stop(self):
+        if self.x_speed > 0:
+            self.x_speed = 0

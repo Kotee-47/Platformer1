@@ -6,7 +6,7 @@ ALL_SPRITES = pygame.sprite.Group()
 ENVIRONMENT_SPRITES = pygame.sprite.Group()
 DECOR_SPRITES = pygame.sprite.Group()
 PLAYER = pygame.sprite.Group()
-CELL_SIZE = 32
+CELL_SIZE = 64
 
 
 def main():
@@ -38,7 +38,6 @@ def main():
                 player.right_move = True
             else:
                 player.right_move = False
-                # player.right_stop()
             if key[pygame.K_w]:
                 player.jump()
             if key[pygame.K_DOWN]:

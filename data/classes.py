@@ -67,8 +67,7 @@ class Board:
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, picture, group, allgroup, x, y, cell_size=16):
-        # self.image = functions.load_image(picture)
-        self.image = pygame.image.load(picture)
+        self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group, allgroup)
         self.rect = x * cell_size, y * cell_size

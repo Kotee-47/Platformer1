@@ -7,8 +7,8 @@ class Environment(pygame.sprite.Sprite):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
         super().__init__(group, grp2)
-        self.startrect = x * cell_size, y * cell_size
-        self.rect = x * cell_size, y * cell_size
+        self.startrect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
+        self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
 
 
@@ -70,7 +70,7 @@ class Player(pygame.sprite.Sprite):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group, allgroup)
-        self.rect = x * cell_size, y * cell_size
+        self.rect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.y_speed = 0
         self.x_speed = 0
@@ -112,7 +112,8 @@ class Player(pygame.sprite.Sprite):
         else:
             self.x_speed = 0
 
-        player.rect = (player.rect[0] + self.x_speed * dt, player.rect[1] + self.y_speed * dt)
+        player.rect.x = player.rect.x + self.x_speed * dt
+        player.rect.y = player.rect.y + self.y_speed * dt
 
     def left(self, player):
         self.left_move = True
@@ -146,10 +147,10 @@ class Camera:
 
     # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
-        obj.rect = (obj.rect[0] + self.dx - self.cell_size // 2, obj.rect[1])
-        obj.rect = (obj.rect[0], obj.rect[1] + self.dy - self.cell_size // 4)
+        obj.rect.x = obj.rect.x + self.dx - self.cell_size // 2
+        obj.rect.y = obj.rect.y + self.dy - self.cell_size // 4
 
     # позиционировать камеру на объекте target
     def update(self, target):
-        self.dx = -(target.rect[0] + self.cell_size // 2 - self.width // 2)
-        self.dy = -(target.rect[1] + self.cell_size // 2 - self.height // 2)
+        self.dx = -(target.rect.x + self.cell_size // 2 - self.width // 2)
+        self.dy = -(target.rect.y + self.cell_size // 2 - self.height // 2)

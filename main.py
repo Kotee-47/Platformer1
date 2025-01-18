@@ -29,6 +29,14 @@ GRAY = (100, 100, 100)
 # Шрифт
 font = pygame.font.Font(None, 36)
 
+# Музыка
+def play_music(music_file):
+    pygame.mixer.init()
+    try:
+        pygame.mixer.music.load(music_file)
+        pygame.mixer.music.play(-1)
+    except pygame.error as e:
+        print(f"Ошибка при загрузке или проигрывании музыки: {e}")
 
 # Класс для кнопки
 class Button:
@@ -127,6 +135,7 @@ game_screen = None  # переменная для экрана, для избе�
 # Функции действий кнопок
 def start_game():
     global game_running, game_screen
+    play_music('Pure_Vessel.mp3')
     print("Начало игры")
 
     size = width, height = 640, 320
@@ -157,7 +166,6 @@ def start_game():
     game_running = False  # сбрасываем переменную при выходе из игрового цикла
     pygame.display.set_mode((WIDTH, HEIGHT))  # возвращаем размеры окна меню
     pygame.display.set_caption("Меню игры")  # возвращаем заголовок меню
-
 
 def continue_game():
     print("Продолжение игры")

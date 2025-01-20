@@ -71,6 +71,7 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group, allgroup)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
+        self.newrect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.y_speed = 0
         self.x_speed = 0
@@ -84,8 +85,25 @@ class Player(pygame.sprite.Sprite):
     def update(self, env, player, dt):
         self.on_surf = False
         spd1 = (3.125 * self.cell_size) // 1
+
+        player.newrect.x = player.rect.x + self.x_speed * dt
+        player.newrect.y = player.rect.y + self.y_speed * dt
+
+        # temp_srf1 = pygame.surface.Surface((player.newrect[2] - 10, player.newrect[3]))
+        # temp_msk1 = pygame.mask.from_surface(temp_srf1)
+        # rect2 = player.newrect.x.move(5)
+        # tcat1 = TempCat(rect2, temp_msk1)
+
+        temp_srf2 = pygame.surface.Surface((player.newrect[2], player.newrect[3] - 6))
+        temp_msk2 = pygame.mask.from_surface(temp_srf2)
+        tcat2 = TempCat(player.newrect, temp_msk2)
+        can_move = True
+
         if pygame.sprite.spritecollideany(player, env):
             self.on_surf = True
+        for i in env:
+            if pygame.sprite.collide_mask(tcat2, i):
+                can_move = False
         if not self.on_surf:
             if self.y_speed < spd1 * 3:
                 self.y_speed += spd1 // 10
@@ -111,9 +129,9 @@ class Player(pygame.sprite.Sprite):
         else:
             self.x_speed = 0
 
-        rect = player.rect.move(self.x_speed * dt, 0)
-        new_rect = rect.move(0, self.y_speed * dt)
-        self.rect = new_rect
+        if can_move:
+            player.rect.x = player.rect.x + self.x_speed * dt
+        player.rect.y = player.rect.y + self.y_speed * dt
 
     def left(self, player):
         self.left_move = True
@@ -154,3 +172,9 @@ class Camera:
     def update(self, target):
         self.dx = -(target.rect.x + self.cell_size // 2 - self.width // 2)
         self.dy = -(target.rect.y + self.cell_size // 2 - self.height // 2)
+
+class TempCat:
+    def __init__(self, rect, mask):
+        self.rect = rect
+        self.mask = mask
+

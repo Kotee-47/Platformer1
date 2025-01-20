@@ -11,6 +11,7 @@ CELL_SIZE = 64
 
 def main():
     pygame.init()
+    pygame.display.set_icon(pygame.image.load("images/icons/ktetmblu.png"))
     size = width, height = 1080, 720
     board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES,ALL_SPRITES , CELL_SIZE)
     screen = pygame.display.set_mode(size)
@@ -19,7 +20,7 @@ def main():
     running = True
     dt = 0
     fps = 120
-    player = classes.Player('images/player/cat.png', PLAYER, ALL_SPRITES, 0, 0, CELL_SIZE)
+    player = classes.Player('images/player/cat.png', PLAYER, ALL_SPRITES, 3, 8, CELL_SIZE)
     board.render(screen)
     camera = classes.Camera(width, height, CELL_SIZE)
 

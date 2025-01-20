@@ -7,7 +7,7 @@ class Environment(pygame.sprite.Sprite):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
         super().__init__(group, grp2)
-        self.startrect = x * cell_size, y * cell_size
+        self.startrect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
 
@@ -71,12 +71,9 @@ class Player(pygame.sprite.Sprite):
         self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group, allgroup)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
-        self.realrect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.y_speed = 0
         self.x_speed = 0
-        self.x_st = x * cell_size
-        self.y_st = y * cell_size
         self.left_player = False
         self.left_move = False
         self.right_move = False
@@ -140,6 +137,7 @@ class Player(pygame.sprite.Sprite):
 
 
 class Camera:
+    # зададим начальный сдвиг камеры
     def __init__(self, width, height, cell_size):
         self.width = width
         self.height = height
@@ -147,10 +145,12 @@ class Camera:
         self.dy = 0
         self.cell_size = cell_size
 
+    # сдвинуть объект obj на смещение камеры
     def apply(self, obj):
         obj.rect.x = obj.rect.x + self.dx - self.cell_size // 2
         obj.rect.y = obj.rect.y + self.dy - self.cell_size // 4
 
+    # позиционировать камеру на объекте target
     def update(self, target):
         self.dx = -(target.rect.x + self.cell_size // 2 - self.width // 2)
         self.dy = -(target.rect.y + self.cell_size // 2 - self.height // 2)

@@ -46,7 +46,6 @@ def main():
 
         screen.fill("#030303")
 
-        # камера
         camera.update(player)
         for sprite in ALL_SPRITES:
             camera.apply(sprite)
@@ -54,7 +53,6 @@ def main():
         ENVIRONMENT_SPRITES.draw(screen)
         PLAYER.draw(screen)
 
-        # сталкивание с полом и падение
         player.update(ENVIRONMENT_SPRITES, player, dt)
 
         pygame.display.flip()

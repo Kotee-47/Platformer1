@@ -3,18 +3,22 @@ from data import functions
 
 
 class Environment(pygame.sprite.Sprite):
-    def __init__(self, picture, group, grp2, x, y, cell_size=16):
+    def __init__(self, picture, group, grp2, x, y, cell_size=16, additional_group=None):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size, cell_size))
-        super().__init__(group, grp2)
+        if additional_group:
+            super().__init__(group, grp2, additional_group)
+        else:
+            super().__init__(group, grp2)
         self.startrect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, cell_size=16):
+    def __init__(self, envgroup, decgroup, allgroup, dangroup,  cell_size=16):
         self.cell_size = cell_size
+        self.dangroup = dangroup
         self.envgroup = envgroup
         self.decgroup = decgroup
         self.allgroup = allgroup
@@ -63,15 +67,27 @@ class Board:
                     sprite = Environment('images/blocks/environment/7_stone_surface_grass.png',
                                          self.envgroup, self.allgroup,
                                          x, y, self.cell_size)
+                elif self.board[y][x] == '8':
+                    sprite = Environment('images/blocks/environment/8_dead_bush.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '9':
+                    sprite = Environment('images/blocks/environment/9_dirt.png',
+                                         self.envgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '10':
+                    sprite = Environment('images/blocks/danger/10_spikes.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, picture, group, allgroup, x, y, cell_size=16):
+    def __init__(self, picture, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
         self.image = functions.load_image(picture)
         self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group, allgroup)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
-        self.newrect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size, cell_size)
+        self.newrect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size + 2, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.y_speed = 0
         self.x_speed = 0
@@ -81,20 +97,19 @@ class Player(pygame.sprite.Sprite):
         self.on_surf = False
         self.facing_right = True
         self.cell_size = cell_size
+        self.healthbar = HealthBar(width, height, healthgrp)
+        self.health = 100
 
-    def update(self, env, player, dt):
+    def update(self, env, dang, player, dt):
         self.on_surf = False
         spd1 = (3.125 * self.cell_size) // 1
 
         player.newrect.x = player.rect.x + self.x_speed * dt
         player.newrect.y = player.rect.y + self.y_speed * dt
 
-        # temp_srf1 = pygame.surface.Surface((player.newrect[2] - 10, player.newrect[3]))
-        # temp_msk1 = pygame.mask.from_surface(temp_srf1)
-        # rect2 = player.newrect.x.move(5)
-        # tcat1 = TempCat(rect2, temp_msk1)
-
-        temp_srf2 = pygame.surface.Surface((player.newrect[2], player.newrect[3] - 6))
+        trect = player.newrect
+        trect.x -= 1
+        temp_srf2 = pygame.surface.Surface((trect[2], player.newrect[3] - 6))
         temp_msk2 = pygame.mask.from_surface(temp_srf2)
         tcat2 = TempCat(player.newrect, temp_msk2)
         can_move = True
@@ -104,6 +119,10 @@ class Player(pygame.sprite.Sprite):
         for i in env:
             if pygame.sprite.collide_mask(tcat2, i):
                 can_move = False
+        for i in dang:
+            if pygame.sprite.collide_mask(player, i):
+                self.jump()
+                self.health -= 1
         if not self.on_surf:
             if self.y_speed < spd1 * 3:
                 self.y_speed += spd1 // 10
@@ -132,6 +151,8 @@ class Player(pygame.sprite.Sprite):
         if can_move:
             player.rect.x = player.rect.x + self.x_speed * dt
         player.rect.y = player.rect.y + self.y_speed * dt
+
+        self.healthbar.update(self.health)
 
     def left(self, player):
         self.left_move = True
@@ -178,3 +199,49 @@ class TempCat:
         self.rect = rect
         self.mask = mask
 
+
+class HealthBar(pygame.sprite.Sprite):
+    def __init__(self, width, height, healthgrp):
+        super().__init__(healthgrp)
+        self.rect = pygame.Rect(0, 0, 256, 64)
+        self.rect.x = width // 50
+        self.rect.y = height // 50
+
+        self.zero = functions.load_image('images/player/health_bar/0_hp.png')
+        self.one = functions.load_image('images/player/health_bar/1_hp.png')
+        self.two = functions.load_image('images/player/health_bar/2_hp.png')
+        self.three = functions.load_image('images/player/health_bar/3_hp.png')
+        self.four = functions.load_image('images/player/health_bar/4_hp.png')
+        self.five = functions.load_image('images/player/health_bar/5_hp.png')
+        self.six = functions.load_image('images/player/health_bar/6_hp.png')
+        self.seven = functions.load_image('images/player/health_bar/7_hp.png')
+        self.eight = functions.load_image('images/player/health_bar/8_hp.png')
+
+        self.image = self.eight
+
+    def update(self, health):
+        if health == 0:
+            self.image = self.zero
+        elif 0 < health < 12.5:
+            self.image = self.one
+        elif 12.5 <= health < 25:
+            self.image = self.two
+        elif 25 <= health < 37.5:
+            self.image = self.three
+        elif 37.5 <= health < 50:
+            self.image = self.four
+        elif 50 <= health < 62.5:
+            self.image = self.five
+        elif 62.5 <= health < 75:
+            self.image = self.six
+        elif 75 <= health < 87.5:
+            self.image = self.seven
+        elif 87.5 <= health <= 100:
+            self.image = self.eight
+
+
+class Background(pygame.sprite.Sprite):
+    def __init__(self, group, background):
+        super().__init__(group)
+        self.rect = 0, 0
+        self.image = functions.load_image(background)

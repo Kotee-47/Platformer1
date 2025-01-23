@@ -121,8 +121,8 @@ class Player(pygame.sprite.Sprite):
                 can_move = False
         for i in dang:
             if pygame.sprite.collide_mask(player, i):
-                self.jump()
-                self.health -= 1
+                self.y_speed -= 400
+                self.health -= 12.5
         if not self.on_surf:
             if self.y_speed < spd1 * 3:
                 self.y_speed += spd1 // 10

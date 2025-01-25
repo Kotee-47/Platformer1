@@ -10,11 +10,11 @@ pygame.init()
 WIDTH = 800
 HEIGHT = 600
 screen = pygame.display.set_mode((WIDTH, HEIGHT))
-pygame.display.set_caption("Меню игры")
+pygame.display.set_caption("Ketdventure")
 
 # Загрузка фона
 try:
-    background = pygame.image.load("фон.jpg").convert()
+    background = pygame.image.load("images/фон.jpg").convert()
     background = pygame.transform.scale(background, (WIDTH, HEIGHT))
 except pygame.error as e:
     print(f"Ошибка загрузки фона: {e}")
@@ -37,7 +37,6 @@ def play_music(music_file):
         pygame.mixer.music.play(-1)
     except pygame.error as e:
         print(f"Ошибка при загрузке или проигрывании музыки: {e}")
-
 # Класс для кнопки
 class Button:
     def __init__(self, x, y, width, height, text, action):
@@ -134,34 +133,109 @@ game_screen = None  # переменная для экрана, для избе�
 
 # Функции действий кнопок
 def start_game():
-    global game_running, game_screen
     play_music('Pure_Vessel.mp3')
-    print("Начало игры")
+    ALL_SPRITES = pygame.sprite.Group()
+    ENVIRONMENT_SPRITES = pygame.sprite.Group()
+    DECOR_SPRITES = pygame.sprite.Group()
+    DANGER_SPRITES = pygame.sprite.Group()
+    PLAYER = pygame.sprite.Group()
+    HEALTH = pygame.sprite.Group()
+    BACKGROUND = pygame.sprite.Group()
+    PAUSE = pygame.sprite.Group()
+    CELL_SIZE = 64
 
-    size = width, height = 640, 320
-    board = classes.Board(ENVIRONMENT_SPRITES, CELL_SIZE)
-    game_screen = pygame.display.set_mode(size)
-    clock = pygame.time.Clock()
-    pygame.display.set_caption("erm")
-    running = True
-    dt = 0
-    fps = 30
-    board.set_view(0, 0)
+    def main():
+        pygame.init()
+        pygame.display.set_icon(pygame.image.load("images/icons/ktetmeliv.png"))
+        size = width, height = 1080, 720
+        board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, CELL_SIZE)
+        screen = pygame.display.set_mode(size)
+        clock = pygame.time.Clock()
+        pygame.display.set_caption("Ketdventure")
+        running = True
+        dt = 0
+        fps = 120
+        player = classes.Player('images/player/sprites/cat.png', PLAYER, ALL_SPRITES, HEALTH, 3, 8,
+                                width, height, CELL_SIZE)
+        board.render(screen)
+        camera = classes.Camera(width, height, CELL_SIZE)
+        classes.Background(BACKGROUND, 'images/backgrounds/cave.png')
+        classes.Background(PAUSE, 'images/pause/backgrnd_pause.png')
+        pause = False
 
-    game_running = True
-    while game_running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                game_running = False
-            if event.type == pygame.MOUSEBUTTONUP:
-                board.get_click(event.pos)
+        while running:
+            if not pause:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    key = pygame.key.get_pressed()
+                    if key[pygame.K_a]:
+                        player.left(PLAYER)
+                        player.left_move = True
+                    else:
+                        player.left_move = False
+                    if key[pygame.K_d]:
+                        player.right(PLAYER)
+                        player.right_move = True
+                    else:
+                        player.right_move = False
+                    if key[pygame.K_w]:
+                        player.jump()
+                    if key[pygame.K_DOWN]:
+                        print(dt)
+                    if key[pygame.K_ESCAPE]:
+                        pause = True
 
-        game_screen.fill("black")
-        board.render(game_screen)
-        ENVIRONMENT_SPRITES.draw(game_screen)
+                # screen.fill("#030303")
+                screen.fill("grey")
 
-        pygame.display.flip()
-        dt = clock.tick(fps) / 1000
+                camera.update(player)
+                for sprite in ALL_SPRITES:
+                    camera.apply(sprite)
+
+                BACKGROUND.draw(screen)
+                ENVIRONMENT_SPRITES.draw(screen)
+                DANGER_SPRITES.draw(screen)
+                DECOR_SPRITES.draw(screen)
+                PLAYER.draw(screen)
+
+                player.update(ENVIRONMENT_SPRITES, DANGER_SPRITES, player, dt)
+                HEALTH.draw(screen)
+
+                for i in ENVIRONMENT_SPRITES:
+                    if i.rect.y < -1500:
+                        running = False
+                    break
+
+                pygame.display.flip()
+                dt = clock.tick(fps) / 1000
+            else:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
+                        running = False
+                    key = pygame.key.get_pressed()
+                    if key[pygame.K_ESCAPE]:
+                        pause = False
+
+                player.right_move = False
+                player.left_move = False
+                player.x_speed = 0
+                player.y_speed = 0
+
+                BACKGROUND.draw(screen)
+                ENVIRONMENT_SPRITES.draw(screen)
+                DANGER_SPRITES.draw(screen)
+                DECOR_SPRITES.draw(screen)
+                PLAYER.draw(screen)
+                HEALTH.draw(screen)
+
+                PAUSE.draw(screen)
+
+                pygame.display.flip()
+
+        pygame.quit()
+
+    main()
 
     game_running = False  # сбрасываем переменную при выходе из игрового цикла
     pygame.display.set_mode((WIDTH, HEIGHT))  # возвращаем размеры окна меню

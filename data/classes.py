@@ -82,8 +82,11 @@ class Board:
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, picture, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
-        self.image = functions.load_image(picture)
+    def __init__(self, sheet, columns, rows, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
+        self.frames = []
+        self.cut_sheet(sheet, columns, rows)
+        self.cur_frame = 0
+        self.image = self.frames[self.cur_frame]
         self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
         super().__init__(group, allgroup)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
@@ -173,6 +176,19 @@ class Player(pygame.sprite.Sprite):
         if self.on_surf:
             if self.y_speed != 4 * spd1:
                 self.y_speed = -4 * spd1
+
+    def cut_sheet(self, sheet, columns, rows):
+        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
+                                sheet.get_height() // rows)
+        for j in range(rows):
+            for i in range(columns):
+                frame_location = (self.rect.w * i, self.rect.h * j)
+                self.frames.append(sheet.subsurface(pygame.Rect(
+                    frame_location, self.rect.size)))
+
+    def update(self):
+        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
+        self.image = self.frames[self.cur_frame]
 
 
 class Camera:

@@ -24,8 +24,8 @@ def main():
     running = True
     dt = 0
     fps = 120
-    player = classes.Player('images/player/sprites/cat.png', PLAYER, ALL_SPRITES, HEALTH, 3, 8,
-                            width, height, CELL_SIZE)
+    player = classes.Player('images/player/sprites/sheet.png', 2, 5, PLAYER, ALL_SPRITES, HEALTH,
+                            3, 8, width, height, CELL_SIZE)
     board.render(screen)
     camera = classes.Camera(width, height, CELL_SIZE)
     classes.Background(BACKGROUND, 'images/backgrounds/cave.png')

@@ -199,7 +199,7 @@ def start_game():
                 DECOR_SPRITES.draw(screen)
                 PLAYER.draw(screen)
 
-                player.update(ENVIRONMENT_SPRITES, DANGER_SPRITES, player, dt)
+                player.update(ENVIRONMENT_SPRITES, DANGER_SPRITES, dt)
                 HEALTH.draw(screen)
 
                 for i in ENVIRONMENT_SPRITES:

@@ -16,13 +16,13 @@ class Environment(pygame.sprite.Sprite):
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, dangroup,  cell_size=16):
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, cell_size=16):
         self.cell_size = cell_size
         self.dangroup = dangroup
         self.envgroup = envgroup
         self.decgroup = decgroup
         self.allgroup = allgroup
-        file = open('files/levels/test_field.txt', 'rt')
+        file = open('files/levels/yara_test_field.txt', 'rt')
         self.board = file.read().split('p')
         for i in range(0, len(self.board)):
             self.board[i] = self.board[i].split()
@@ -31,7 +31,6 @@ class Board:
         self.height = len(self.board)
         self.left = 10
         self.top = 10
-
 
     def render(self, screen):
         self.screen = screen
@@ -79,6 +78,14 @@ class Board:
                     sprite = Environment('images/blocks/danger/10_spikes.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
+                elif self.board[y][x] == '11':
+                    sprite = Environment('images/turret/turret_base.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '12':
+                    sprite = Environment('images/turret/turret_cannon.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
 
 
 class Player(pygame.sprite.Sprite):
@@ -89,6 +96,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
         self.newrect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size + 2, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
+        self.x = 0
+        self.y = 0
         self.y_speed = 0
         self.x_speed = 0
         self.left_player = False
@@ -100,27 +109,24 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = HealthBar(width, height, healthgrp)
         self.health = 100
 
-    def update(self, env, dang, player, dt):
+    def update(self, env, dang, dt):
         self.on_surf = False
         spd1 = (3.125 * self.cell_size) // 1
 
-        player.newrect.x = player.rect.x + self.x_speed * dt
-        player.newrect.y = player.rect.y + self.y_speed * dt
-
-        trect = player.newrect
-        trect.x -= 1
-        temp_srf2 = pygame.surface.Surface((trect[2], player.newrect[3] - 6))
-        temp_msk2 = pygame.mask.from_surface(temp_srf2)
-        tcat2 = TempCat(player.newrect, temp_msk2)
+        self.newrect.x = self.rect.x + self.x_speed * dt
+        self.newrect.y = self.rect.y + self.y_speed * dt
+        temp_srf = pygame.surface.Surface((self.newrect[2], self.newrect[3] - 6))
+        temp_msk = pygame.mask.from_surface(temp_srf)
+        tcat = TempCat(self.newrect, temp_msk)
         can_move = True
 
-        if pygame.sprite.spritecollideany(player, env):
+        if pygame.sprite.spritecollideany(self, env):
             self.on_surf = True
         for i in env:
-            if pygame.sprite.collide_mask(tcat2, i):
+            if pygame.sprite.collide_mask(tcat, i):
                 can_move = False
         for i in dang:
-            if pygame.sprite.collide_mask(player, i):
+            if pygame.sprite.collide_mask(self, i):
                 self.y_speed -= 400
                 self.health -= 12.5
         if not self.on_surf:
@@ -149,8 +155,11 @@ class Player(pygame.sprite.Sprite):
             self.x_speed = 0
 
         if can_move:
-            player.rect.x = player.rect.x + self.x_speed * dt
-        player.rect.y = player.rect.y + self.y_speed * dt
+            self.rect.x += self.x_speed * dt
+            self.x += self.x_speed * dt
+        self.rect.y += self.y_speed * dt
+        self.y += self.y_speed * dt
+         # print(self.x, self.y)
 
         self.healthbar.update(self.health)
 
@@ -193,6 +202,7 @@ class Camera:
     def update(self, target):
         self.dx = -(target.rect.x + self.cell_size // 2 - self.width // 2)
         self.dy = -(target.rect.y + self.cell_size // 2 - self.height // 2)
+
 
 class TempCat:
     def __init__(self, rect, mask):

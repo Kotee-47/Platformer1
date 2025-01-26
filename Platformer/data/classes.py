@@ -1,3 +1,5 @@
+import random
+import os
 import pygame
 from data import functions
 
@@ -33,6 +35,8 @@ class Board:
         self.top = 10
 
     def render(self, screen):
+        objects = {}
+
         self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
@@ -87,6 +91,96 @@ class Board:
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
 
+                    if not 'turrets' in objects:
+                        objects['turrets'] = [
+                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup)]
+                    else:
+                        objects['turrets'].append(
+                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup))
+        return objects
+
+class firstBoard:
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, cell_size=16):
+        self.cell_size = cell_size
+        self.dangroup = dangroup
+        self.envgroup = envgroup
+        self.decgroup = decgroup
+        self.allgroup = allgroup
+        file = open('files/levels/first_level.txt', 'rt')
+        self.board = file.read().split('p')
+        for i in range(0, len(self.board)):
+            self.board[i] = self.board[i].split()
+        file.close()
+        self.width = len(self.board[0])
+        self.height = len(self.board)
+        self.left = 10
+        self.top = 10
+
+    def render(self, screen):
+        objects = {}
+
+        self.screen = screen
+        for x in range(self.width):
+            for y in range(self.height):
+                if self.board[y][x] == '0':
+                    pass
+                elif self.board[y][x] == '1':
+                    sprite = Environment('images/blocks/environment/1_stone_surface.png',
+                                         self.envgroup, self.allgroup, x, y,
+                                         self.cell_size)
+                elif self.board[y][x] == '2':
+                    sprite = Environment('images/blocks/environment/2_stone.png',
+                                         self.envgroup, self.allgroup, x, y,
+                                         self.cell_size)
+                elif self.board[y][x] == '3':
+                    sprite = Environment('images/blocks/environment/3_stone_corner.png',
+                                         self.envgroup, self.allgroup, x, y,
+                                         self.cell_size)
+                elif self.board[y][x] == '4':
+                    sprite = Environment('images/blocks/decor/4_moss.png',
+                                         self.decgroup, self.allgroup, x, y,
+                                         self.cell_size)
+                elif self.board[y][x] == '5':
+                    sprite = Environment('images/blocks/environment/5_stone_surface_moss.png',
+                                         self.envgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '6':
+                    sprite = Environment('images/blocks/decor/6_grass.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '7':
+                    sprite = Environment('images/blocks/environment/7_stone_surface_grass.png',
+                                         self.envgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '8':
+                    sprite = Environment('images/blocks/environment/8_dead_bush.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '9':
+                    sprite = Environment('images/blocks/environment/9_dirt.png',
+                                         self.envgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '10':
+                    sprite = Environment('images/blocks/danger/10_spikes.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '11':
+                    sprite = Environment('images/turret/turret_base.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '12':
+                    sprite = Environment('images/turret/turret_cannon.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+
+                    if not 'turrets' in objects:
+                        objects['turrets'] = [
+                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup)]
+                    else:
+                        objects['turrets'].append(
+                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup))
+        return objects
+
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, picture, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
@@ -96,8 +190,8 @@ class Player(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
         self.newrect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size + 2, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
-        self.x = 0
-        self.y = 0
+        self.x = 3 * 64
+        self.y = 8 * 64
         self.y_speed = 0
         self.x_speed = 0
         self.left_player = False
@@ -159,8 +253,6 @@ class Player(pygame.sprite.Sprite):
             self.x += self.x_speed * dt
         self.rect.y += self.y_speed * dt
         self.y += self.y_speed * dt
-         # print(self.x, self.y)
-
         self.healthbar.update(self.health)
 
     def left(self, player):
@@ -180,8 +272,8 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         spd1 = (3.125 * self.cell_size) // 1
         if self.on_surf:
-            if self.y_speed != 4 * spd1:
-                self.y_speed = -4 * spd1
+            if self.y_speed != 3 * spd1:
+                self.y_speed = -3 * spd1
 
 
 class Camera:
@@ -231,7 +323,11 @@ class HealthBar(pygame.sprite.Sprite):
 
     def update(self, health):
         if health == 0:
-            self.image = self.zero
+            pygame.quit()
+            if pygame.error:
+                self.image = self.zero
+                print('вы померли')
+                pygame.quit()
         elif 0 < health < 12.5:
             self.image = self.one
         elif 12.5 <= health < 25:
@@ -255,3 +351,19 @@ class Background(pygame.sprite.Sprite):
         super().__init__(group)
         self.rect = 0, 0
         self.image = functions.load_image(background)
+
+
+class Turret(pygame.sprite.Sprite):
+    def __init__(self, x, y, picture, cell_size, group):
+        super().__init__(group)
+        self.image = functions.load_image(picture)
+        self.x = x * cell_size
+        self.y = y * cell_size
+        self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.degrees = 180
+
+    def update(self, x, y):
+        # print(random.random())
+        self.image = pygame.transform.rotate(self.image, 1)
+        self.degrees += 1

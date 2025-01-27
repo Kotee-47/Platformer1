@@ -82,18 +82,28 @@ class Board:
 
 
 class Player(pygame.sprite.Sprite):
-    def __init__(self, sheet, columns, rows, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
-        self.frames = []
-        self.cut_sheet(sheet, columns, rows)
-        self.cur_frame = 0
-        self.image = self.frames[self.cur_frame]
-        self.image = pygame.transform.scale(self.image, (cell_size * 2, cell_size))
+    def __init__(self, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
+
+        self.images = []
+        self.images.append(functions.load_image('images/player/sprites/standing.png'))
+        self.images.append(functions.load_image('images/player/sprites/jump.png'))
+        self.images.append(functions.load_image('images/player/sprites/lie.png'))
+        self.images.append(functions.load_image('images/player/sprites/run/running2.png'))
+        self.images.append(functions.load_image('images/player/sprites/run/running3.png'))
+        self.images.append(functions.load_image('images/player/sprites/run/running1.png'))
+        for i in range(len(self.images)):
+            self.images[i] = pygame.transform.scale(self.images[i], (cell_size * 2, cell_size))
+
+        self.image = self.images[0]
+
         super().__init__(group, allgroup)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size * 2, cell_size)
         self.newrect = pygame.Rect(x * cell_size, y * cell_size, 2 * cell_size + 2, cell_size)
-        self.mask = pygame.mask.from_surface(self.image)
+        self.mask = pygame.mask.from_surface(self.images[0])
         self.y_speed = 0
         self.x_speed = 0
+        self.run_cadres = 0
+        self.run_im = 0
         self.left_player = False
         self.left_move = False
         self.right_move = False
@@ -102,6 +112,7 @@ class Player(pygame.sprite.Sprite):
         self.cell_size = cell_size
         self.healthbar = HealthBar(width, height, healthgrp)
         self.health = 100
+        self.move = False
 
     def update(self, env, dang, player, dt):
         self.on_surf = False
@@ -119,6 +130,42 @@ class Player(pygame.sprite.Sprite):
 
         if pygame.sprite.spritecollideany(player, env):
             self.on_surf = True
+
+        if not self.on_surf:
+            self.image = self.images[1]
+        else:
+            if self.x_speed == 0:
+                self.image = self.images[0]
+            else:
+                self.run_cadres += 1
+                if self.run_cadres > 20:
+                    self.run_cadres = 0
+                if self.run_cadres == 1:
+                    self.run_im += 1
+                    if self.run_im > 4:
+                        self.run_im = 1
+                    if self.run_im == 1:
+                        self.image = self.images[4]
+                    elif self.run_im == 2:
+                        self.image = self.images[3]
+                    elif self.run_im == 3:
+                        self.image = self.images[4]
+                    elif self.run_im == 4:
+                        self.image = self.images[5]
+                else:
+                    if self.run_im == 1:
+                        self.image = self.images[4]
+                    elif self.run_im == 2:
+                        self.image = self.images[3]
+                    elif self.run_im == 3:
+                        self.image = self.images[4]
+                    elif self.run_im == 4:
+                        self.image = self.images[5]
+
+
+        if not self.facing_right:
+            self.image = pygame.transform.flip(self.image, True, False)
+
         for i in env:
             if pygame.sprite.collide_mask(tcat2, i):
                 can_move = False
@@ -160,6 +207,7 @@ class Player(pygame.sprite.Sprite):
     def left(self, player):
         self.left_move = True
         self.right_move = False
+        self.move = True
         if self.facing_right:
             self.image = pygame.transform.flip(self.image, True, False)
             self.facing_right = False
@@ -167,6 +215,7 @@ class Player(pygame.sprite.Sprite):
     def right(self, player):
         self.left_move = False
         self.right_move = True
+        self.move = True
         if not self.facing_right:
             self.image = pygame.transform.flip(self.image, True, False)
             self.facing_right = True
@@ -176,19 +225,6 @@ class Player(pygame.sprite.Sprite):
         if self.on_surf:
             if self.y_speed != 4 * spd1:
                 self.y_speed = -4 * spd1
-
-    def cut_sheet(self, sheet, columns, rows):
-        self.rect = pygame.Rect(0, 0, sheet.get_width() // columns,
-                                sheet.get_height() // rows)
-        for j in range(rows):
-            for i in range(columns):
-                frame_location = (self.rect.w * i, self.rect.h * j)
-                self.frames.append(sheet.subsurface(pygame.Rect(
-                    frame_location, self.rect.size)))
-
-    def update(self):
-        self.cur_frame = (self.cur_frame + 1) % len(self.frames)
-        self.image = self.frames[self.cur_frame]
 
 
 class Camera:

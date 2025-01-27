@@ -24,8 +24,8 @@ def main():
     running = True
     dt = 0
     fps = 120
-    player = classes.Player('images/player/sprites/sheet.png', 2, 5, PLAYER, ALL_SPRITES, HEALTH,
-                            3, 8, width, height, CELL_SIZE)
+    player = classes.Player(PLAYER, ALL_SPRITES, HEALTH, 3, 8,
+                            width, height, CELL_SIZE)
     board.render(screen)
     camera = classes.Camera(width, height, CELL_SIZE)
     classes.Background(BACKGROUND, 'images/backgrounds/cave.png')
@@ -56,7 +56,6 @@ def main():
                     pause = True
 
             # screen.fill("#030303")
-            screen.fill("grey")
 
             camera.update(player)
             for sprite in ALL_SPRITES:

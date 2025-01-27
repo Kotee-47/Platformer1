@@ -28,7 +28,7 @@ def main():
                             width, height, CELL_SIZE)
     board.render(screen)
     camera = classes.Camera(width, height, CELL_SIZE)
-    classes.Background(BACKGROUND, 'images/backgrounds/cave.png')
+    classes.Background(BACKGROUND, 'images/backgrounds/' + board.background)
     classes.Background(PAUSE, 'images/pause/backgrnd_pause.png')
     pause = False
 

@@ -23,7 +23,9 @@ class Board:
         self.decgroup = decgroup
         self.allgroup = allgroup
         file = open('files/levels/test_field.txt', 'rt')
-        self.board = file.read().split('p')
+        bord = file.read().split('<sp>')
+        self.background = bord[0]
+        self.board = bord[1].split('p')
         for i in range(0, len(self.board)):
             self.board[i] = self.board[i].split()
         file.close()
@@ -113,10 +115,13 @@ class Player(pygame.sprite.Sprite):
         self.healthbar = HealthBar(width, height, healthgrp)
         self.health = 100
         self.move = False
+        self.live_frames = 0
 
     def update(self, env, dang, player, dt):
         self.on_surf = False
         spd1 = (3.125 * self.cell_size) // 1
+        if self.live_frames >= 0:
+            self.live_frames -= 1
 
         player.newrect.x = player.rect.x + self.x_speed * dt
         player.newrect.y = player.rect.y + self.y_speed * dt
@@ -171,8 +176,10 @@ class Player(pygame.sprite.Sprite):
                 can_move = False
         for i in dang:
             if pygame.sprite.collide_mask(player, i):
-                self.y_speed -= 400
-                self.health -= 12.5
+                if self.live_frames <= 0:
+                    self.health -= 12.5
+                    self.live_frames = 30
+                self.y_speed = -500
         if not self.on_surf:
             if self.y_speed < spd1 * 3:
                 self.y_speed += spd1 // 10

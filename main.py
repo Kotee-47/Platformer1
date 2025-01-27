@@ -1,39 +1,105 @@
 import pygame
-from data import functions
 from data import classes
 
 
+ALL_SPRITES = pygame.sprite.Group()
 ENVIRONMENT_SPRITES = pygame.sprite.Group()
 DECOR_SPRITES = pygame.sprite.Group()
-CELL_SIZE = 16
+DANGER_SPRITES = pygame.sprite.Group()
+PLAYER = pygame.sprite.Group()
+HEALTH = pygame.sprite.Group()
+BACKGROUND = pygame.sprite.Group()
+PAUSE = pygame.sprite.Group()
+CELL_SIZE = 64
 
 
 def main():
     pygame.init()
-    size = width, height = 640, 320
-    board = classes.Board(ENVIRONMENT_SPRITES, CELL_SIZE)
+    pygame.display.set_icon(pygame.image.load("images/icons/ktetmeliv.png"))
+    size = width, height = 1080, 720
+    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, CELL_SIZE)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
-    pygame.display.set_caption("erm")
+    pygame.display.set_caption("Ketdventure")
     running = True
     dt = 0
-    fps = 30
-    board.set_view(0, 0)
+    fps = 120
+    player = classes.Player(PLAYER, ALL_SPRITES, HEALTH, 3, 8,
+                            width, height, CELL_SIZE)
+    board.render(screen)
+    camera = classes.Camera(width, height, CELL_SIZE)
+    classes.Background(BACKGROUND, 'images/backgrounds/' + board.background)
+    classes.Background(PAUSE, 'images/pause/backgrnd_pause.png')
+    pause = False
 
     while running:
-        for event in pygame.event.get():
-            if event.type == pygame.QUIT:
-                running = False
-            if event.type == pygame.MOUSEBUTTONUP:
-                board.get_click(event.pos)
+        if not pause:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                key = pygame.key.get_pressed()
+                if key[pygame.K_a]:
+                    player.left(PLAYER)
+                    player.left_move = True
+                else:
+                    player.left_move = False
+                if key[pygame.K_d]:
+                    player.right(PLAYER)
+                    player.right_move = True
+                else:
+                    player.right_move = False
+                if key[pygame.K_w]:
+                    player.jump()
+                if key[pygame.K_DOWN]:
+                    print(dt)
+                if key[pygame.K_ESCAPE]:
+                    pause = True
 
-        screen.fill("black")
-        board.render(screen)
+            # screen.fill("#030303")
 
-        ENVIRONMENT_SPRITES.draw(screen)
+            camera.update(player)
+            for sprite in ALL_SPRITES:
+                camera.apply(sprite)
 
-        pygame.display.flip()
-        dt = clock.tick(fps) / 1000
+            BACKGROUND.draw(screen)
+            ENVIRONMENT_SPRITES.draw(screen)
+            DANGER_SPRITES.draw(screen)
+            DECOR_SPRITES.draw(screen)
+            PLAYER.draw(screen)
+
+            player.update(ENVIRONMENT_SPRITES, DANGER_SPRITES, player, dt)
+            HEALTH.draw(screen)
+
+            for i in ENVIRONMENT_SPRITES:
+                if i.rect.y < -1500:
+                    running = False
+                break
+
+            pygame.display.flip()
+            dt = clock.tick(fps) / 1000
+        else:
+            for event in pygame.event.get():
+                if event.type == pygame.QUIT:
+                    running = False
+                key = pygame.key.get_pressed()
+                if key[pygame.K_ESCAPE]:
+                    pause = False
+
+            player.right_move = False
+            player.left_move = False
+            player.x_speed = 0
+            player.y_speed = 0
+
+            BACKGROUND.draw(screen)
+            ENVIRONMENT_SPRITES.draw(screen)
+            DANGER_SPRITES.draw(screen)
+            DECOR_SPRITES.draw(screen)
+            PLAYER.draw(screen)
+            HEALTH.draw(screen)
+
+            PAUSE.draw(screen)
+
+            pygame.display.flip()
 
     pygame.quit()
 

@@ -1,5 +1,6 @@
 import pygame
 from data import classes
+from data import functions
 
 
 ALL_SPRITES = pygame.sprite.Group()
@@ -36,6 +37,14 @@ def main():
     pause = False
     finish_c = 0
     finished = False
+    pause_buttons = [
+        classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Продолжить игру", 'continue'),
+        classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
+    ]
+    win_buttons = [
+        classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Следующий уровень", None),
+        classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
+    ]
 
     while running:
         if not finished:
@@ -100,6 +109,11 @@ def main():
                     key = pygame.key.get_pressed()
                     if key[pygame.K_ESCAPE]:
                         pause = False
+                    for button in pause_buttons:
+                        if button.handle_event(event) == 'exit':
+                            running = False
+                        if button.handle_event(event) == 'continue':
+                            pause = False
 
                 player.right_move = False
                 player.left_move = False
@@ -115,14 +129,24 @@ def main():
                 HEALTH.draw(screen)
 
                 PAUSE.draw(screen)
+                for button in pause_buttons:
+                    button.draw(screen)
 
                 pygame.display.flip()
         else:
             for event in pygame.event.get():
                 if event.type == pygame.QUIT:
                     running = False
+                for button in win_buttons:
+                    if button.handle_event(event) == 'exit':
+                        running = False
+
             BACKGROUND.draw(screen)
             FINISH_SCREEN.draw(screen)
+
+            for button in win_buttons:
+                button.draw(screen)
+
             pygame.display.flip()
 
 

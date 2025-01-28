@@ -16,12 +16,13 @@ class Environment(pygame.sprite.Sprite):
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, dangroup,  cell_size=16):
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp, cell_size=16):
         self.cell_size = cell_size
         self.dangroup = dangroup
         self.envgroup = envgroup
         self.decgroup = decgroup
         self.allgroup = allgroup
+        self.fingroup = fingrp
         file = open('files/levels/test_field.txt', 'rt')
         bord = file.read().split('<sp>')
         self.background = bord[0]
@@ -41,6 +42,14 @@ class Board:
             for y in range(self.height):
                 if self.board[y][x] == '0':
                     pass
+                elif self.board[y][x] == 'st':
+                    sprite = Environment('images/blocks/special/cave/start.png',
+                                         self.decgroup, self.allgroup,
+                                         x / 2, y / 2, self.cell_size * 2)
+                elif self.board[y][x] == 'en':
+                    sprite = Environment('images/blocks/special/cave/end/end1.png',
+                                         self.fingroup, self.allgroup,
+                                         x / 2, y / 2, self.cell_size * 2)
                 elif self.board[y][x] == '1':
                     sprite = Environment('images/blocks/environment/1_stone_surface.png',
                                          self.envgroup, self.allgroup, x, y,
@@ -79,6 +88,22 @@ class Board:
                                          x, y, self.cell_size)
                 elif self.board[y][x] == '10':
                     sprite = Environment('images/blocks/danger/10_spikes.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '11':
+                    sprite = Environment('images/blocks/decor/11_lian_1.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '12':
+                    sprite = Environment('images/blocks/decor/12_lian_2.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '13':
+                    sprite = Environment('images/blocks/decor/13_lian_3.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '14':
+                    sprite = Environment('images/blocks/danger/14_small_spike.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
 
@@ -177,7 +202,7 @@ class Player(pygame.sprite.Sprite):
         for i in dang:
             if pygame.sprite.collide_mask(player, i):
                 if self.live_frames <= 0:
-                    self.health -= 12.5
+                    self.health -= 13
                     self.live_frames = 30
                 self.y_speed = -500
         if not self.on_surf:

@@ -1,7 +1,8 @@
 import random
 import os
-import pygame
 from data import functions
+import math
+import pygame
 
 
 class Environment(pygame.sprite.Sprite):
@@ -36,8 +37,6 @@ class Board:
 
     def render(self, screen):
         objects = {}
-
-        self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
                 if self.board[y][x] == '0':
@@ -87,19 +86,15 @@ class Board:
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == '12':
-                    sprite = Environment('images/turret/turret_cannon.png',
-                                         self.dangroup, self.allgroup,
-                                         x, y, self.cell_size)
-
-                    if not 'turrets' in objects:
-                        objects['turrets'] = [
-                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup)]
+                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y, self.cell_size)
+                    if 'turrets' in objects:
+                        objects['turrets'].append(sprite)
                     else:
-                        objects['turrets'].append(
-                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup))
+                        objects['turrets'] = [sprite]
         return objects
 
-class firstBoard:
+
+class firstBaoard:
     def __init__(self, envgroup, decgroup, allgroup, dangroup, cell_size=16):
         self.cell_size = cell_size
         self.dangroup = dangroup
@@ -118,8 +113,6 @@ class firstBoard:
 
     def render(self, screen):
         objects = {}
-
-        self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
                 if self.board[y][x] == '0':
@@ -169,17 +162,13 @@ class firstBoard:
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == '12':
-                    sprite = Environment('images/turret/turret_cannon.png',
-                                         self.dangroup, self.allgroup,
-                                         x, y, self.cell_size)
-
-                    if not 'turrets' in objects:
-                        objects['turrets'] = [
-                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup)]
+                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y, self.cell_size)
+                    if 'turrets' in objects:
+                        objects['turrets'].append(sprite)
                     else:
-                        objects['turrets'].append(
-                            Turret(x * 64, y * 64, 'images/turret/turret_cannon.png', 16, self.dangroup))
+                        objects['turrets'] = [sprite]
         return objects
+
 
 
 class Player(pygame.sprite.Sprite):
@@ -272,8 +261,8 @@ class Player(pygame.sprite.Sprite):
     def jump(self):
         spd1 = (3.125 * self.cell_size) // 1
         if self.on_surf:
-            if self.y_speed != 3 * spd1:
-                self.y_speed = -3 * spd1
+            if self.y_speed != 4 * spd1:
+                self.y_speed = -4 * spd1
 
 
 class Camera:
@@ -323,11 +312,7 @@ class HealthBar(pygame.sprite.Sprite):
 
     def update(self, health):
         if health == 0:
-            pygame.quit()
-            if pygame.error:
-                self.image = self.zero
-                print('вы померли')
-                pygame.quit()
+            self.image = self.zero
         elif 0 < health < 12.5:
             self.image = self.one
         elif 12.5 <= health < 25:
@@ -354,16 +339,25 @@ class Background(pygame.sprite.Sprite):
 
 
 class Turret(pygame.sprite.Sprite):
-    def __init__(self, x, y, picture, cell_size, group):
-        super().__init__(group)
-        self.image = functions.load_image(picture)
+    cell_size = 16
+    def __init__(self, picture, group, allgroup, x, y, cell_size):
+        self.original_image = pygame.transform.scale(functions.load_image(picture), (cell_size, cell_size))
+        self.image = self.original_image.copy()
+        super().__init__(group, allgroup)
         self.x = x * cell_size
         self.y = y * cell_size
-        self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
+        self.rect = pygame.Rect(self.x, self.y, cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
         self.degrees = 180
 
-    def update(self, x, y):
-        # print(random.random())
-        self.image = pygame.transform.rotate(self.image, 1)
-        self.degrees += 1
+    def update(self, target_x, target_y):
+        dx = target_x - self.x
+        dy = target_y - self.y
+        z = math.sqrt(dx ** 2 + dy ** 2)
+        angle = math.degrees(math.acos(-dx / z) * math.copysign(1, math.asin(dy / z)))
+
+        if angle != self.degrees:
+            self.degrees = angle
+            self.image = pygame.transform.rotate(self.original_image, self.degrees)
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.mask = pygame.mask.from_surface(self.image)

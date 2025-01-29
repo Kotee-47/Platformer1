@@ -136,7 +136,7 @@ game_screen = None  # переменная для экрана, для избе�
 
 # Функции действий кнопок
 def start_game():
-    play_music('Pure_Vessel.mp3')
+    play_music('lena-raine-prologue.mp3')
     ALL_SPRITES = pygame.sprite.Group()
     ENVIRONMENT_SPRITES = pygame.sprite.Group()
     DECOR_SPRITES = pygame.sprite.Group()

@@ -94,7 +94,7 @@ class Board:
         return objects
 
 
-class firstBaoard:
+class firstBoard:
     def __init__(self, envgroup, decgroup, allgroup, dangroup, cell_size=16):
         self.cell_size = cell_size
         self.dangroup = dangroup

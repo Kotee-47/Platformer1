@@ -25,11 +25,8 @@ class Board:
         self.envgroup = envgroup
         self.decgroup = decgroup
         self.allgroup = allgroup
-        self.fingroup = fingrp
-        file = open('files/levels/test_field.txt', 'rt')
-        bord = file.read().split('<sp>')
-        self.background = bord[0]
-        self.board = bord[1].split('p')
+        file = open('files/levels/yara_test_field.txt', 'rt')
+        self.board = file.read().split('p')
         for i in range(0, len(self.board)):
             self.board[i] = self.board[i].split()
         file.close()

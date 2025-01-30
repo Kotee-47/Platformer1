@@ -154,11 +154,18 @@ class Player(pygame.sprite.Sprite):
         player.newrect.x = player.rect.x + self.x_speed * dt
         player.newrect.y = player.rect.y + self.y_speed * dt
 
-        trect = player.newrect
-        trect.x -= 1
-        temp_srf2 = pygame.surface.Surface((trect[2], player.newrect[3] - 6))
+        trect = pygame.rect.Rect(player.newrect)
+        trect.x -= 3
+        temp_srf2 = pygame.surface.Surface((trect[2] + 2, player.newrect[3] - 6))
         temp_msk2 = pygame.mask.from_surface(temp_srf2)
-        tcat2 = TempCat(player.newrect, temp_msk2)
+        tcat2 = TempCat(trect, temp_msk2)
+
+        trect2 = pygame.rect.Rect(player.newrect)
+        trect2.x += 2
+        temp_srf3 = pygame.surface.Surface((trect2[2] - 6, player.newrect[3] - 10))
+        temp_msk3 = pygame.mask.from_surface(temp_srf3)
+        tcat3 = TempCat(trect2, temp_msk3)
+
         can_move = True
 
         if pygame.sprite.spritecollideany(player, env):
@@ -202,6 +209,11 @@ class Player(pygame.sprite.Sprite):
         for i in env:
             if pygame.sprite.collide_mask(tcat2, i):
                 can_move = False
+
+        for i in env:
+            if pygame.sprite.collide_mask(tcat3, i):
+                self.y_speed = 10
+
         for i in dang:
             if pygame.sprite.collide_mask(player, i):
                 if self.live_frames <= 0:

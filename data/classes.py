@@ -16,14 +16,15 @@ class Environment(pygame.sprite.Sprite):
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp, cell_size=16):
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp,
+                 cell_size=16, level='files/levels/test_field.txt'):
         self.cell_size = cell_size
         self.dangroup = dangroup
         self.envgroup = envgroup
         self.decgroup = decgroup
         self.allgroup = allgroup
         self.fingroup = fingrp
-        file = open('files/levels/test_field.txt', 'rt')
+        file = open(level, 'rt')
         bord = file.read().split('<sp>')
         self.background = bord[0]
         self.board = bord[1].split('p')
@@ -34,6 +35,7 @@ class Board:
         self.height = len(self.board)
         self.left = 10
         self.top = 10
+        self.spawn = 0, 0
 
 
     def render(self, screen):
@@ -46,6 +48,7 @@ class Board:
                     sprite = Environment('images/blocks/special/cave/start.png',
                                          self.decgroup, self.allgroup,
                                          x / 2, y / 2, self.cell_size * 2)
+                    self.spawn = x, y
                 elif self.board[y][x] == 'en':
                     sprite = Environment('images/blocks/special/cave/end/end1.png',
                                          self.fingroup, self.allgroup,

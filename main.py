@@ -20,16 +20,19 @@ def main():
     pygame.init()
     pygame.display.set_icon(pygame.image.load("images/icons/ktetmeliv.png"))
     size = width, height = 1080, 720
-    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, FINISH, CELL_SIZE)
+    level = 'files/levels/chapt1/level1.txt'
+    level2 = 'files/levels/test_field.txt'
+    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, FINISH, CELL_SIZE,
+                          level2)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     pygame.display.set_caption("Ketdventure")
     running = True
     dt = 0
     fps = 120
-    player = classes.Player(PLAYER, ALL_SPRITES, HEALTH, 3, 8,
-                            width, height, CELL_SIZE)
     board.render(screen)
+    player = classes.Player(PLAYER, ALL_SPRITES, HEALTH, board.spawn[0], board.spawn[1],
+                            width, height, CELL_SIZE)
     camera = classes.Camera(width, height, CELL_SIZE)
     classes.Background(BACKGROUND, 'images/backgrounds/' + board.background)
     classes.Background(FINISH_SCREEN, 'images/backgrounds/finished.png')

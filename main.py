@@ -7,6 +7,7 @@ ALL_SPRITES = pygame.sprite.Group()
 ENVIRONMENT_SPRITES = pygame.sprite.Group()
 DECOR_SPRITES = pygame.sprite.Group()
 DANGER_SPRITES = pygame.sprite.Group()
+JUMP_PADS = pygame.sprite.Group()
 PLAYER = pygame.sprite.Group()
 HEALTH = pygame.sprite.Group()
 BACKGROUND = pygame.sprite.Group()
@@ -21,8 +22,9 @@ def main():
     pygame.display.set_icon(pygame.image.load("images/icons/ktetmeliv.png"))
     size = width, height = 1080, 720
     level = 'files/levels/chapt1/level1.txt'
-    level2 = 'files/levels/test_field.txt'
-    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, FINISH, CELL_SIZE,
+    level2 = 'files/levels/chapt1/level2.txt'
+    leveltest = 'files/levels/test_field.txt'
+    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, FINISH, JUMP_PADS, CELL_SIZE,
                           level2)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
@@ -40,6 +42,7 @@ def main():
     pause = False
     finish_c = 0
     finished = False
+
     pause_buttons = [
         classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Продолжить игру", 'continue'),
         classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
@@ -84,11 +87,14 @@ def main():
                         finish_c += 1
                         if finish_c > 50:
                             finished = True
+                    if pygame.sprite.spritecollideany(i, JUMP_PADS):
+                        player.y_speed = -1200
 
                 BACKGROUND.draw(screen)
                 DANGER_SPRITES.draw(screen)
                 FINISH.draw(screen)
                 ENVIRONMENT_SPRITES.draw(screen)
+                JUMP_PADS.draw(screen)
                 DECOR_SPRITES.draw(screen)
                 PLAYER.draw(screen)
 

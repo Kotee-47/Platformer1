@@ -16,7 +16,7 @@ class Environment(pygame.sprite.Sprite):
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp,
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp, jumpadgr,
                  cell_size=16, level='files/levels/test_field.txt'):
         self.cell_size = cell_size
         self.dangroup = dangroup
@@ -24,6 +24,7 @@ class Board:
         self.decgroup = decgroup
         self.allgroup = allgroup
         self.fingroup = fingrp
+        self.jumpadgr = jumpadgr
         file = open(level, 'rt')
         bord = file.read().split('<sp>')
         self.background = bord[0]
@@ -109,6 +110,10 @@ class Board:
                     sprite = Environment('images/blocks/danger/14_small_spike.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
+                elif self.board[y][x] == '15':
+                    sprite = Environment('images/blocks/special/15_jump_pad.png',
+                                         self.jumpadgr, self.allgroup,
+                                         x, y, self.cell_size)
 
 
 class Player(pygame.sprite.Sprite):
@@ -156,7 +161,7 @@ class Player(pygame.sprite.Sprite):
 
         trect = pygame.rect.Rect(player.newrect)
         trect.x -= 3
-        temp_srf2 = pygame.surface.Surface((trect[2] + 2, player.newrect[3] - 6))
+        temp_srf2 = pygame.surface.Surface((trect[2] + 4, player.newrect[3] - 6))
         temp_msk2 = pygame.mask.from_surface(temp_srf2)
         tcat2 = TempCat(trect, temp_msk2)
 

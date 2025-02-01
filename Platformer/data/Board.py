@@ -66,10 +66,30 @@ class Board:
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == '11':
+                    sprite = Environment('images/blocks/decor/11_lian_1.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '12':
+                    sprite = Environment('images/blocks/decor/12_lian_2.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '13':
+                    sprite = Environment('images/blocks/decor/13_lian_3.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '14':
+                    sprite = Environment('images/blocks/danger/14_small_spike.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '15':
+                    sprite = Environment('images/blocks/special/15_jump_pad.png',
+                                         self.jumpadgr, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '-1':
                     sprite = Environment('images/turret/turret_base.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
-                elif self.board[y][x] == '12':
+                elif self.board[y][x] == '-2':
                     sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y, self.cell_size)
                     if 'turrets' in objects:
                         objects['turrets'].append(sprite)

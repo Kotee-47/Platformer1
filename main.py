@@ -1,31 +1,127 @@
 import pygame
 from data import classes
 from data import functions
+from config import *
+from copy import deepcopy
 
 
-ALL_SPRITES = pygame.sprite.Group()
-ENVIRONMENT_SPRITES = pygame.sprite.Group()
-DECOR_SPRITES = pygame.sprite.Group()
-DANGER_SPRITES = pygame.sprite.Group()
-JUMP_PADS = pygame.sprite.Group()
-PLAYER = pygame.sprite.Group()
-HEALTH = pygame.sprite.Group()
-BACKGROUND = pygame.sprite.Group()
-PAUSE = pygame.sprite.Group()
-FINISH = pygame.sprite.Group()
-FINISH_SCREEN = pygame.sprite.Group()
-CELL_SIZE = 64
+def menu():
+    # Настройки окна
+    size = width, height = 1080, 720
+    screen = pygame.display.set_mode(size)
+    clock = pygame.time.Clock()
+    pygame.display.set_caption("Ketdventure")
+    pygame.font.init()
+
+    # Шрифты
+    font = pygame.font.Font(None, 74)
+    button_font = pygame.font.Font(None, 36)
+
+    # Текст заголовка
+    title_text = font.render("Catdventure", True, 'black')
+
+    # Количество уровней
+    levels = 10
+
+    # Создание кнопок
+    buttons = []
+    button_width, button_height = 150, 50
+    button_margin = 20
+
+    # Список функций для уровней
+    level_functions = [(main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level2.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt'),
+                       (main, 'files/levels/chapt1/level1.txt')]
+
+    # Расположение кнопок в два ряда
+    for i in range(levels):
+        row = i // 5
+        col = i % 5
+        x = (width - (5 * button_width + 4 * button_margin)) // 2 + col * (button_width + button_margin)
+        y = (height - (2 * button_height + 1 * button_margin)) // 2 + row * (button_height + button_margin)
+        button = pygame.Rect(x, y, button_width, button_height)
+        buttons.append({"rect": button, "color": 'green', "pressed": False, "function": level_functions[i]})
+
+    # Кнопка выхода
+    exit_button = {"rect": pygame.Rect((width - button_width) // 2, height - 100, button_width, button_height),
+                   "color": 'green', "pressed": False}
+
+    # Основной цикл
+    running = True
+    while running:
+        screen.fill('white')
+
+        # Отображение заголовка
+        screen.blit(title_text, (width // 2 - title_text.get_width() // 2, 50))
+
+        # Отображение кнопок уровней
+        for button_data in buttons:
+            button = button_data["rect"]
+            color = button_data["color"]
+            pygame.draw.rect(screen, color, button)
+            level_text = button_font.render(f"Level {buttons.index(button_data) + 1}",
+                                            True, 'black')
+            screen.blit(level_text, (button.x + 30, button.y + 15))
+
+        # Отображение кнопки выхода
+        pygame.draw.rect(screen, exit_button["color"], exit_button["rect"])
+        exit_text = button_font.render("Exit", True, 'black')
+        screen.blit(exit_text, (exit_button["rect"].x + 50, exit_button["rect"].y + 15))
+
+        # Обработка событий
+        for event in pygame.event.get():
+            if event.type == pygame.QUIT:
+                pygame.quit()
+            elif event.type == pygame.MOUSEBUTTONDOWN:
+                mouse_pos = event.pos
+                for button_data in buttons:
+                    if button_data["rect"].collidepoint(mouse_pos):
+                        button_data["color"] = 'red'  # Меняем цвет на красный
+                        button_data["pressed"] = True
+                if exit_button["rect"].collidepoint(mouse_pos):
+                    exit_button["color"] = 'red'
+                    exit_button["pressed"] = True
+            elif event.type == pygame.MOUSEBUTTONUP:
+                for button_data in buttons:
+                    if button_data["pressed"]:
+                        button_data["color"] = 'green'  # Возвращаем цвет к зеленому
+                        button_data["pressed"] = False
+                        button_data["function"][0](button_data["function"][1]) # Вызываем функцию кнопки
+                        return
+                if exit_button["pressed"]:
+                    exit_button["color"] = 'green'
+                    exit_button["pressed"] = False
+                    running = False  # Вызываем функцию кнопки выхода
+
+        pygame.display.flip()
 
 
-def main():
+def main(level):
     pygame.init()
+
+    all_sp = deepcopy(ALL_SPRITES)
+    env_sp = deepcopy(ENVIRONMENT_SPRITES)
+    dec_sp = deepcopy(DECOR_SPRITES)
+    dang_sp = deepcopy(DANGER_SPRITES)
+    jump_sp = deepcopy(JUMP_PADS)
+    player_sp = deepcopy(PLAYER)
+    health_sp = deepcopy(HEALTH)
+    backgr_sp = deepcopy(BACKGROUND)
+    pause_sp = deepcopy(PAUSE)
+    finish_sp = deepcopy(FINISH)
+    f_screen_sp = deepcopy(FINISH_SCREEN)
+
     pygame.display.set_icon(pygame.image.load("images/icons/ktetmeliv.png"))
     size = width, height = 1080, 720
-    level = 'files/levels/chapt1/level1.txt'
-    level2 = 'files/levels/chapt1/level2.txt'
-    leveltest = 'files/levels/test_field.txt'
-    board = classes.Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, FINISH, JUMP_PADS, CELL_SIZE,
-                          level2)
+    board = classes.Board(env_sp, dec_sp, all_sp, dang_sp, finish_sp, jump_sp, CELL_SIZE,
+                          level)
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     pygame.display.set_caption("Ketdventure")
@@ -33,12 +129,12 @@ def main():
     dt = 0
     fps = 120
     board.render(screen)
-    player = classes.Player(PLAYER, ALL_SPRITES, HEALTH, board.spawn[0], board.spawn[1],
+    player = classes.Player(player_sp, all_sp, health_sp, board.spawn[0], board.spawn[1],
                             width, height, CELL_SIZE)
     camera = classes.Camera(width, height, CELL_SIZE)
-    classes.Background(BACKGROUND, 'images/backgrounds/' + board.background)
-    classes.Background(FINISH_SCREEN, 'images/backgrounds/finished.png')
-    classes.Background(PAUSE, 'images/pause/backgrnd_pause.png')
+    classes.Background(backgr_sp, 'images/backgrounds/' + board.background)
+    classes.Background(f_screen_sp, 'images/backgrounds/finished.png')
+    classes.Background(pause_sp, 'images/pause/backgrnd_pause.png')
     pause = False
     finish_c = 0
     finished = False
@@ -60,12 +156,12 @@ def main():
                         running = False
                     key = pygame.key.get_pressed()
                     if key[pygame.K_a]:
-                        player.left(PLAYER)
+                        player.left(player_sp)
                         player.left_move = True
                     else:
                         player.left_move = False
                     if key[pygame.K_d]:
-                        player.right(PLAYER)
+                        player.right(player_sp)
                         player.right_move = True
                     else:
                         player.right_move = False
@@ -79,29 +175,29 @@ def main():
                 # screen.fill("#030303")
 
                 camera.update(player)
-                for sprite in ALL_SPRITES:
+                for sprite in all_sp:
                     camera.apply(sprite)
 
-                for i in PLAYER:
-                    if pygame.sprite.spritecollideany(i, FINISH):
+                for i in player_sp:
+                    if pygame.sprite.spritecollideany(i, finish_sp):
                         finish_c += 1
                         if finish_c > 50:
                             finished = True
-                    if pygame.sprite.spritecollideany(i, JUMP_PADS):
+                    if pygame.sprite.spritecollideany(i, jump_sp):
                         player.y_speed = -1200
 
-                BACKGROUND.draw(screen)
-                DANGER_SPRITES.draw(screen)
-                FINISH.draw(screen)
-                ENVIRONMENT_SPRITES.draw(screen)
-                JUMP_PADS.draw(screen)
-                DECOR_SPRITES.draw(screen)
-                PLAYER.draw(screen)
+                backgr_sp.draw(screen)
+                dang_sp.draw(screen)
+                finish_sp.draw(screen)
+                env_sp.draw(screen)
+                jump_sp.draw(screen)
+                dec_sp.draw(screen)
+                player_sp.draw(screen)
 
-                player.update(ENVIRONMENT_SPRITES, DANGER_SPRITES, player, dt)
-                HEALTH.draw(screen)
+                player.update(env_sp, dang_sp, player, dt)
+                health_sp.draw(screen)
 
-                for i in ENVIRONMENT_SPRITES:
+                for i in env_sp:
                     if i.rect.y < -1500:
                         running = False
                     break
@@ -129,15 +225,15 @@ def main():
                 player.x_speed = 0
                 player.y_speed = 0
 
-                BACKGROUND.draw(screen)
-                DANGER_SPRITES.draw(screen)
-                FINISH.draw(screen)
-                ENVIRONMENT_SPRITES.draw(screen)
-                DECOR_SPRITES.draw(screen)
-                PLAYER.draw(screen)
-                HEALTH.draw(screen)
+                backgr_sp.draw(screen)
+                dang_sp.draw(screen)
+                finish_sp.draw(screen)
+                env_sp.draw(screen)
+                dec_sp.draw(screen)
+                player_sp.draw(screen)
+                health_sp.draw(screen)
 
-                PAUSE.draw(screen)
+                pause_sp.draw(screen)
                 for button in pause_buttons:
                     button.draw(screen)
 
@@ -150,17 +246,16 @@ def main():
                     if button.handle_event(event) == 'exit':
                         running = False
 
-            BACKGROUND.draw(screen)
-            FINISH_SCREEN.draw(screen)
+            backgr_sp.draw(screen)
+            f_screen_sp.draw(screen)
 
             for button in win_buttons:
                 button.draw(screen)
 
             pygame.display.flip()
 
-
-    pygame.quit()
+    menu()
 
 
 if __name__ == '__main__':
-    main()
+    menu()

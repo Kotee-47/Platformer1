@@ -47,7 +47,7 @@ volume = 50
 # Создание кнопок
 menu_buttons = [
     Button(WIDTH // 2 - 100, 150, 200, 50, "Начать игру", level_manu),
-    Button(WIDTH // 2 - 100, 250, 200, 50, "Продолжить игру", continue_game),
+    Button(WIDTH // 2 - 125, 250, 225, 50, "Продолжить игру", continue_game),
     Button(WIDTH // 2 - 100, 350, 200, 50, "Настройки", open_settings),
     Button(WIDTH // 2 - 100, 450, 200, 50, "Выход", exit_game)
 ]

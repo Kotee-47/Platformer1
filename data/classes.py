@@ -115,11 +115,11 @@ class Board:
                                          self.jumpadgr, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == 't1':
-                    sprite = Environment('images/turret/turret_base.png',
+                    sprite = Environment('images/turret/camera_base.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == 't2':
-                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y,
+                    sprite = Turret('images/turret/turret_cannon.png', self.decgroup, self.allgroup, x, y,
                                     self.cell_size)
                     if 'turrets' in objects:
                         objects['turrets'].append(sprite)

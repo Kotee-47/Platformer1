@@ -12,4 +12,5 @@ BACKGROUND = pygame.sprite.Group()
 PAUSE = pygame.sprite.Group()
 FINISH = pygame.sprite.Group()
 FINISH_SCREEN = pygame.sprite.Group()
+DEAD_SCREEN = pygame.sprite.Group()
 CELL_SIZE = 64

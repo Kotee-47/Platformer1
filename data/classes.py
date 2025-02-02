@@ -1,4 +1,5 @@
 import pygame
+import math
 from data import functions
 
 
@@ -16,13 +17,16 @@ class Environment(pygame.sprite.Sprite):
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, dangroup,  cell_size=16):
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp, jumpadgr,
+                 cell_size=16, level='files/levels/test_field.txt'):
         self.cell_size = cell_size
         self.dangroup = dangroup
         self.envgroup = envgroup
         self.decgroup = decgroup
         self.allgroup = allgroup
-        file = open('files/levels/test_field.txt', 'rt')
+        self.fingroup = fingrp
+        self.jumpadgr = jumpadgr
+        file = open(level, 'rt')
         bord = file.read().split('<sp>')
         self.background = bord[0]
         self.board = bord[1].split('p')
@@ -33,14 +37,23 @@ class Board:
         self.height = len(self.board)
         self.left = 10
         self.top = 10
+        self.spawn = 0, 0
 
-
-    def render(self, screen):
+    def render(self, screen, objects):
         self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
                 if self.board[y][x] == '0':
                     pass
+                elif self.board[y][x] == 'st':
+                    sprite = Environment('images/blocks/special/cave/start.png',
+                                         self.decgroup, self.allgroup,
+                                         x / 2, y / 2, self.cell_size * 2)
+                    self.spawn = x, y
+                elif self.board[y][x] == 'en':
+                    sprite = Environment('images/blocks/special/cave/end/end1.png',
+                                         self.fingroup, self.allgroup,
+                                         x / 2, y / 2, self.cell_size * 2)
                 elif self.board[y][x] == '1':
                     sprite = Environment('images/blocks/environment/1_stone_surface.png',
                                          self.envgroup, self.allgroup, x, y,
@@ -81,7 +94,37 @@ class Board:
                     sprite = Environment('images/blocks/danger/10_spikes.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
-
+                elif self.board[y][x] == '11':
+                    sprite = Environment('images/blocks/decor/11_lian_1.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '12':
+                    sprite = Environment('images/blocks/decor/12_lian_2.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '13':
+                    sprite = Environment('images/blocks/decor/13_lian_3.png',
+                                         self.decgroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '14':
+                    sprite = Environment('images/blocks/danger/14_small_spike.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == '15':
+                    sprite = Environment('images/blocks/special/15_jump_pad.png',
+                                         self.jumpadgr, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == 't1':
+                    sprite = Environment('images/turret/turret_base.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == 't2':
+                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y,
+                                    self.cell_size)
+                    if 'turrets' in objects:
+                        objects['turrets'].append(sprite)
+                    else:
+                        objects['turrets'] = [sprite]
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
@@ -126,11 +169,18 @@ class Player(pygame.sprite.Sprite):
         player.newrect.x = player.rect.x + self.x_speed * dt
         player.newrect.y = player.rect.y + self.y_speed * dt
 
-        trect = player.newrect
-        trect.x -= 1
-        temp_srf2 = pygame.surface.Surface((trect[2], player.newrect[3] - 6))
+        trect = pygame.rect.Rect(player.newrect)
+        trect.x -= 3
+        temp_srf2 = pygame.surface.Surface((trect[2] + 4, player.newrect[3] - 6))
         temp_msk2 = pygame.mask.from_surface(temp_srf2)
-        tcat2 = TempCat(player.newrect, temp_msk2)
+        tcat2 = TempCat(trect, temp_msk2)
+
+        trect2 = pygame.rect.Rect(player.newrect)
+        trect2.x += 2
+        temp_srf3 = pygame.surface.Surface((trect2[2] - 6, player.newrect[3] - 10))
+        temp_msk3 = pygame.mask.from_surface(temp_srf3)
+        tcat3 = TempCat(trect2, temp_msk3)
+
         can_move = True
 
         if pygame.sprite.spritecollideany(player, env):
@@ -174,10 +224,15 @@ class Player(pygame.sprite.Sprite):
         for i in env:
             if pygame.sprite.collide_mask(tcat2, i):
                 can_move = False
+
+        for i in env:
+            if pygame.sprite.collide_mask(tcat3, i):
+                self.y_speed = 10
+
         for i in dang:
             if pygame.sprite.collide_mask(player, i):
                 if self.live_frames <= 0:
-                    self.health -= 12.5
+                    self.health -= 13
                     self.live_frames = 30
                 self.y_speed = -500
         if not self.on_surf:
@@ -304,3 +359,136 @@ class Background(pygame.sprite.Sprite):
         super().__init__(group)
         self.rect = 0, 0
         self.image = functions.load_image(background)
+
+
+class PauseButton:
+    def __init__(self, x, y, width, height, text, action):
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = text
+        self.action = action
+        self.color = 'gray'
+        self.hover_color = 'dark gray'
+
+    def draw(self, surface):
+        font = pygame.font.SysFont('Segoe UI', 36, True)
+        pygame.draw.rect(surface, self.color, self.rect)
+        text_surface = font.render(self.text, True, 'black')
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        surface.blit(text_surface, text_rect)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEMOTION:
+            if self.rect.collidepoint(event.pos):
+                self.color = self.hover_color
+            else:
+                self.color = 'gray'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.rect.collidepoint(event.pos):
+                return self.action
+
+
+class Turret(pygame.sprite.Sprite):
+    def __init__(self, picture, group, allgroup, x, y, cell_size=64):
+        self.original_image = pygame.transform.scale(functions.load_image(picture), (cell_size, cell_size))
+        self.image = self.original_image.copy()
+        super().__init__(group, allgroup)
+        self.x = x * cell_size
+        self.y = y * cell_size
+        self.rect = pygame.Rect(self.x, self.y, cell_size, cell_size)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.degrees = 180
+
+    def update(self, target_x, target_y):
+        dx = target_x - self.rect.x
+        dy = target_y - self.rect.y
+        z = math.sqrt(dx ** 2 + dy ** 2)
+        angle = math.degrees(math.acos(-dx / z) * math.copysign(1, math.asin(dy / z)))
+
+        if angle != self.degrees:
+            self.degrees = angle
+            print(self.degrees)
+            self.image = pygame.transform.rotate(self.original_image, self.degrees)
+            self.rect = self.image.get_rect(center=self.rect.center)
+            self.mask = pygame.mask.from_surface(self.image)
+
+
+class Slider:
+    def __init__(self, x, y, width, height, min_value, max_value, initial_value, text):
+        self.font = pygame.font.Font(None, 36)
+        self.rect = pygame.Rect(x, y, width, height)
+        self.handle_radius = height // 2
+        self.min_value = min_value
+        self.max_value = max_value
+        self.value = initial_value
+        self.text = text
+        self.dragging = False
+
+    def draw(self, surface):
+        # Рисуем фон слайдера
+        pygame.draw.rect(surface, 'gray', self.rect)
+
+        # Вычисляем позицию ручки слайдера на основе текущего значения
+        ratio = (self.value - self.min_value) / (self.max_value - self.min_value)
+        handle_x = self.rect.x + int(ratio * self.rect.width)
+
+        # Рисуем ручку
+        pygame.draw.circle(surface, 'white', (handle_x, self.rect.centery), self.handle_radius)
+
+        # Рисуем текст слайдера
+        text_surface = self.font.render(f"{self.text}: {int(self.value)}", True, 'black')
+        text_rect = text_surface.get_rect(bottomleft=(self.rect.left, self.rect.top - 5))
+        surface.blit(text_surface, text_rect)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1:
+                if self.get_handle_rect().collidepoint(event.pos):
+                    self.dragging = True
+        elif event.type == pygame.MOUSEBUTTONUP:
+            self.dragging = False
+        elif event.type == pygame.MOUSEMOTION:
+            if self.dragging:
+                mouse_x = event.pos[0]
+                new_value = self.min_value + (
+                        max(min(mouse_x, self.rect.right), self.rect.left) - self.rect.left) / self.rect.width * (
+                                    self.max_value - self.min_value)
+                self.value = round(max(min(new_value, self.max_value), self.min_value))
+
+    def get_handle_rect(self):
+        ratio = (self.value - self.min_value) / (self.max_value - self.min_value)
+        handle_x = self.rect.x + int(ratio * self.rect.width)
+        handle_rect = pygame.Rect(handle_x - self.handle_radius,
+                                  self.rect.y,
+                                  self.handle_radius * 2,
+                                  self.rect.height)
+        return handle_rect
+
+    def get_value(self):
+        return self.value
+
+
+class Button:
+    def __init__(self, x, y, width, height, text, action):
+        self.font = pygame.font.Font(None, 36)
+        self.rect = pygame.Rect(x, y, width, height)
+        self.text = text
+        self.action = action
+        self.color = 'white'
+        self.hover_color = 'gray'
+
+    def draw(self, surface):
+        pygame.draw.rect(surface, self.color, self.rect)
+        text_surface = self.font.render(self.text, True, 'black')
+        text_rect = text_surface.get_rect(center=self.rect.center)
+        surface.blit(text_surface, text_rect)
+
+    def handle_event(self, event):
+        if event.type == pygame.MOUSEMOTION:
+            if self.rect.collidepoint(event.pos):
+                self.color = self.hover_color
+            else:
+                self.color = 'white'
+        if event.type == pygame.MOUSEBUTTONDOWN:
+            if event.button == 1 and self.rect.collidepoint(event.pos):
+                return self.action
+        return None

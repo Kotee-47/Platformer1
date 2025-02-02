@@ -31,14 +31,14 @@ def menu():
     # Список функций для уровней
     level_functions = [(main, 'files/levels/chapt1/level1.txt'),
                        (main, 'files/levels/chapt1/level2.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt'),
-                       (main, 'files/levels/chapt1/level1.txt')]
+                       (main, 'files/levels/chapt1/level3.txt'),
+                       (main, 'files/levels/chapt1/level4.txt'),
+                       (main, 'files/levels/chapt1/level5.txt'),
+                       (main, 'files/levels/chapt1/level6.txt'),
+                       (main, 'files/levels/chapt1/level7.txt'),
+                       (main, 'files/levels/chapt1/level8.txt'),
+                       (main, 'files/levels/chapt1/level9.txt'),
+                       (main, 'files/levels/chapt1/level10.txt')]
 
     # Расположение кнопок в два ряда
     for i in range(levels):
@@ -128,7 +128,8 @@ def main(level):
     running = True
     dt = 0
     fps = 120
-    board.render(screen)
+    objects = {}
+    board.render(screen, objects)
     player = classes.Player(player_sp, all_sp, health_sp, board.spawn[0], board.spawn[1],
                             width, height, CELL_SIZE)
     camera = classes.Camera(width, height, CELL_SIZE)
@@ -173,6 +174,9 @@ def main(level):
                         pause = True
 
                 # screen.fill("#030303")
+                if 'turrets' in objects.keys():
+                    for obj in objects['turrets']:
+                        obj.update(player.rect.x, player.rect.y)
 
                 camera.update(player)
                 for sprite in all_sp:

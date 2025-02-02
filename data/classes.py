@@ -39,8 +39,7 @@ class Board:
         self.top = 10
         self.spawn = 0, 0
 
-
-    def render(self, screen):
+    def render(self, screen, objects):
         self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
@@ -115,7 +114,17 @@ class Board:
                     sprite = Environment('images/blocks/special/15_jump_pad.png',
                                          self.jumpadgr, self.allgroup,
                                          x, y, self.cell_size)
-
+                elif self.board[y][x] == 't1':
+                    sprite = Environment('images/turret/turret_base.png',
+                                         self.dangroup, self.allgroup,
+                                         x, y, self.cell_size)
+                elif self.board[y][x] == 't2':
+                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y,
+                                    self.cell_size)
+                    if 'turrets' in objects:
+                        objects['turrets'].append(sprite)
+                    else:
+                        objects['turrets'] = [sprite]
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
@@ -397,6 +406,7 @@ class Turret(pygame.sprite.Sprite):
 
         if angle != self.degrees:
             self.degrees = angle
+            print(self.degrees)
             self.image = pygame.transform.rotate(self.original_image, self.degrees)
             self.rect = self.image.get_rect(center=self.rect.center)
             self.mask = pygame.mask.from_surface(self.image)

@@ -207,6 +207,7 @@ def level_menu():
 
 
 def main(level):
+    next_lv = 'files/levels/chapt1/level' + str(int(level[-5]) + 1) + '.txt'
     pygame.init()
 
     all_sp = deepcopy(ALL_SPRITES)
@@ -251,7 +252,7 @@ def main(level):
         classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
     ]
     win_buttons = [
-        classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Следующий уровень", None),
+        classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Следующий уровень", 'next'),
         classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
     ]
 
@@ -356,6 +357,9 @@ def main(level):
                     for button in win_buttons:
                         if button.handle_event(event) == 'exit':
                             running = False
+                        if button.handle_event(event) == 'next':
+                            main(next_lv)
+                            return
 
                 backgr_sp.draw(screen)
                 f_screen_sp.draw(screen)

@@ -51,7 +51,7 @@ class Player(pygame.sprite.Sprite):
 
         trect = self.newrect
         trect.x -= 1
-        temp_srf2 = pygame.surface.Surface((trect[2], self.newrect[3] - 6))
+        temp_srf2 = pygame.surface.Surface((trect[2] + 4, self.newrect[3] - 6))
         temp_msk2 = pygame.mask.from_surface(temp_srf2)
         tcat2 = TempCat(self.newrect, temp_msk2)
         can_move = True

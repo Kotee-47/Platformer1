@@ -43,6 +43,15 @@ class Board:
                 if self.board[y][x] == '0':
                     pass
                 elif self.board[y][x] == 'st':
+                    sprite = Environment('images/blocks/special/cave/start.png',
+                                         self.decgroup, self.allgroup,
+                                         x / 2, y / 2, self.cell_size * 2)
+                    self.spawn = x, y
+                elif self.board[y][x] == 'en':
+                    sprite = Environment('images/blocks/special/cave/end/end1.png',
+                                         self.fingroup, self.allgroup,
+                                         x / 2, y / 2, self.cell_size * 2)
+                elif self.board[y][x] == 'st':
                     sprite = Environment('images/blocks/special_cave/start.png',
                                          self.decgroup, self.allgroup,
                                          x / 2, y / 2, self.cell_size * 2)

@@ -10,5 +10,6 @@ class Environment(pygame.sprite.Sprite):
             super().__init__(group, grp2, additional_group)
         else:
             super().__init__(group, grp2)
+        self.startrect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)

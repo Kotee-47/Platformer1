@@ -5,26 +5,33 @@ from data.Background import Background
 from data.Camera import Camera
 from data.PauseButton import PauseButton
 from constants import ALL_SPRITES, ENVIRONMENT_SPRITES, DECOR_SPRITES, DANGER_SPRITES, PLAYER, HEALTH, BACKGROUND, \
-    PAUSE, WIDTH, HEIGHT, CELL_SIZE, screen
+    PAUSE, WIDTH, HEIGHT, CELL_SIZE,JUMP_PADS, FINISH, screen
 
 
 # Функции действий кнопок
 def run_level():
     pygame.mixer.init()
     try:
-        pygame.mixer.music.load('Pure_Vessel.mp3')
+        pygame.mixer.music.load('lena-raine-prologue.mp3')
         pygame.mixer.music.play(-1)
     except pygame.error as e:
         print(f"Ошибка при загрузке или проигрывании музыки: {e}")
 
     pygame.display.set_icon(pygame.image.load("images/icons/ktetmeliv.png"))
     pygame.display.set_caption("Ketdventure")
-
+    size = 1080, 720
+    screen = pygame.display.set_mode(size)
+    clock = pygame.time.Clock()
+    pygame.display.set_caption("Ketdventure")
+    running = True
     dt = 0
+    finish_c = 0
+    finished = False
+    level2 = 'files/levels/yara_test_field.txt'
     fps = 120
     player = Player(PLAYER, ALL_SPRITES, HEALTH, 3, 8,
                     WIDTH, HEIGHT, CELL_SIZE)
-    board = Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, CELL_SIZE)
+    board = Board(ENVIRONMENT_SPRITES, DECOR_SPRITES, ALL_SPRITES, DANGER_SPRITES, FINISH, JUMP_PADS)
     objects = board.render(screen)
     camera = Camera(WIDTH, HEIGHT, CELL_SIZE)
     Background(BACKGROUND, 'images/backgrounds/cave.png')
@@ -43,36 +50,38 @@ def run_level():
     pause = False
     running = True
     while running:
-        if not pause:
-            for event in pygame.event.get():
-                if event.type == pygame.QUIT:
-                    pygame.quit()
-                key = pygame.key.get_pressed()
-                if key[pygame.K_a]:
-                    player.left(PLAYER)
-                    player.left_move = True
-                else:
-                    player.left_move = False
-                if key[pygame.K_d]:
-                    player.right(PLAYER)
-                    player.right_move = True
-                else:
-                    player.right_move = False
-                if key[pygame.K_w]:
-                    player.jump()
-                if key[pygame.K_DOWN]:
-                    print(dt)
-                if key[pygame.K_ESCAPE]:
-                    pause = True
-                for button in pause_buttons:
-                    if button.handle_event(event) == 'exit':
+        if not finished:
+            if not pause:
+                for event in pygame.event.get():
+                    if event.type == pygame.QUIT:
                         pygame.quit()
-                    if button.handle_event(event) == 'continue':
-                        pause = False
+                    key = pygame.key.get_pressed()
+                    if key[pygame.K_a]:
+                        player.left(PLAYER)
+                        player.left_move = True
+                    else:
+                        player.left_move = False
+                    if key[pygame.K_d]:
+                        player.right(PLAYER)
+                        player.right_move = True
+                    else:
+                        player.right_move = False
+                    if key[pygame.K_w]:
+                        player.jump()
+                    if key[pygame.K_DOWN]:
+                        print(dt)
+                    if key[pygame.K_ESCAPE]:
+                        pause = True
+                    for button in pause_buttons:
+                        if button.handle_event(event) == 'exit':
+                            pygame.quit()
+                        if button.handle_event(event) == 'continue':
+                            pause = False
 
             player.update(ENVIRONMENT_SPRITES, DANGER_SPRITES, dt)
-            for obj in objects['turrets']:
-                obj.update(player.x, player.y)
+            if 'turrets' in objects.keys():
+                for obj in objects['turrets']:
+                    obj.update(player.x, player.y)
 
             camera.update(player)
             for sprite in ALL_SPRITES:
@@ -116,8 +125,18 @@ def run_level():
             DANGER_SPRITES.draw(screen)
             DECOR_SPRITES.draw(screen)
             PLAYER.draw(screen)
+            JUMP_PADS.draw(screen)
             HEALTH.draw(screen)
+            FINISH.draw(screen)
             PAUSE.draw(screen)
+
+            for i in PLAYER:
+                if pygame.sprite.spritecollideany(i, FINISH):
+                    finish_c += 1
+                    if finish_c > 50:
+                        finished = True
+                if pygame.sprite.spritecollideany(i, JUMP_PADS):
+                    player.y_speed = -1200
 
             for button in pause_buttons:
                 button.draw(screen)

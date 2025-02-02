@@ -3,11 +3,12 @@ from data.Turret import Turret
 
 
 class Board:
-    def __init__(self, envgroup, decgroup, allgroup, dangroup, cell_size=16):
+    def __init__(self, envgroup, decgroup, allgroup, dangroup, jumpadgr,  cell_size=16):
         self.cell_size = cell_size
         self.dangroup = dangroup
         self.envgroup = envgroup
         self.decgroup = decgroup
+        self.jumpadgr = jumpadgr
         self.allgroup = allgroup
         file = open('files/levels/yara_test_field.txt', 'rt')
         self.board = file.read().split('p')
@@ -20,6 +21,7 @@ class Board:
         self.top = 10
 
     def render(self, screen):
+        self.screen = screen
         objects = {}
         for x in range(self.width):
             for y in range(self.height):
@@ -90,9 +92,10 @@ class Board:
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == '-2':
-                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y, self.cell_size)
+                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y,
+                                    self.cell_size)
                     if 'turrets' in objects:
                         objects['turrets'].append(sprite)
                     else:
                         objects['turrets'] = [sprite]
-        return objects
+                return objects

@@ -115,11 +115,11 @@ class Board:
                                          self.jumpadgr, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == 't1':
-                    sprite = Environment('images/turret/turret_base.png',
+                    sprite = Environment('images/turret/camera_base.png',
                                          self.dangroup, self.allgroup,
                                          x, y, self.cell_size)
                 elif self.board[y][x] == 't2':
-                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y,
+                    sprite = Turret('images/turret/turret_cannon.png', self.decgroup, self.allgroup, x, y,
                                     self.cell_size)
                     if 'turrets' in objects:
                         objects['turrets'].append(sprite)
@@ -286,6 +286,11 @@ class Player(pygame.sprite.Sprite):
         spd1 = (3.125 * self.cell_size) // 1
         if self.on_surf:
             if self.y_speed != 4 * spd1:
+                pygame.mixer.init()
+                try:
+                    pygame.mixer.Channel(1).play(pygame.mixer.Sound('music_and_sounds/jump.mp3'))
+                except pygame.error as e:
+                    print(f"Ошибка при загрузке или проигрывании музыки: {e}")
                 self.y_speed = -4 * spd1
 
 
@@ -334,6 +339,10 @@ class HealthBar(pygame.sprite.Sprite):
         self.image = self.eight
 
     def update(self, health):
+        try:
+            pygame.mixer.Channel(3).play(pygame.mixer.Sound('music_and_sounds/damage.mp3'), 0)
+        except pygame.error as e:
+            print(f"Ошибка при загрузке или проигрывании музыки: {e}")
         if health == 0:
             self.image = self.zero
         elif 0 < health < 12.5:

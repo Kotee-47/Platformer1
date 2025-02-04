@@ -9,6 +9,12 @@ from data.classes import Slider
 
 
 def menu():
+    pygame.mixer.init()
+    try:
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('music_and_sounds/prologue.mp3'), -1)
+    except pygame.error as e:
+        print(f"Ошибка при загрузке или проигрывании музыки: {e}")
+
     def open_settings():
         global menu_state
         menu_state = "settings"
@@ -76,9 +82,9 @@ def menu():
                     action = button.handle_event(event)
                     if action:
                         action()
-                # for slider in sliders:
-                #     slider.handle_event(event)
-                sliders[1].handle_event(event)
+                #for slider in sliders:
+                    #slider.handle_event(event)
+                sliders[2].handle_event(event)
 
         # Обновление значений
         brightness = brightness_slider.get_value()
@@ -115,7 +121,11 @@ def level_menu():
     clock = pygame.time.Clock()
     pygame.display.set_caption("Ketdventure")
     pygame.font.init()
-
+    pygame.mixer.init()
+    try:
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('music_and_sounds/awake.mp3'), -1)
+    except pygame.error as e:
+        print(f"Ошибка при загрузке или проигрывании музыки: {e}")
     # Шрифты
     font = pygame.font.Font(None, 74)
     button_font = pygame.font.Font(None, 36)
@@ -207,9 +217,12 @@ def level_menu():
 
 
 def main(level):
-    next_lv = 'files/levels/chapt1/level' + str(int(level[-5]) + 1) + '.txt'
     pygame.init()
-
+    pygame.mixer.init()
+    try:
+        pygame.mixer.Channel(0).play(pygame.mixer.Sound('music_and_sounds/first-steps.mp3'), -1)
+    except pygame.error as e:
+        print(f"Ошибка при загрузке или проигрывании музыки: {e}")
     all_sp = deepcopy(ALL_SPRITES)
     env_sp = deepcopy(ENVIRONMENT_SPRITES)
     dec_sp = deepcopy(DECOR_SPRITES)
@@ -252,8 +265,8 @@ def main(level):
         classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
     ]
     win_buttons = [
-        classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Следующий уровень", 'next'),
-        classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'exit')
+        classes.PauseButton(1080 // 2 - 200, 270, 400, 100, "Следующий уровень", 'exit'),
+        classes.PauseButton(1080 // 2 - 200, 380, 400, 100, "Выход", 'quit')
     ]
 
     while running:
@@ -357,16 +370,8 @@ def main(level):
                     for button in win_buttons:
                         if button.handle_event(event) == 'exit':
                             running = False
-                        if button.handle_event(event) == 'next':
-                            main(next_lv)
-                            return
-
-                backgr_sp.draw(screen)
-                f_screen_sp.draw(screen)
-
-                for button in win_buttons:
-                    button.draw(screen)
-
+                        elif button.handle_event(event) == 'quit':
+                            pygame.quit()
                 pygame.display.flip()
         else:
             for event in pygame.event.get():

@@ -15,6 +15,9 @@ class Environment(pygame.sprite.Sprite):
         self.rect = pygame.Rect(x * cell_size, y * cell_size, cell_size, cell_size)
         self.mask = pygame.mask.from_surface(self.image)
 
+    def update(self):
+        pass
+
 
 class Board:
     def __init__(self, envgroup, decgroup, allgroup, dangroup, fingrp, jumpadgr,
@@ -43,88 +46,97 @@ class Board:
         self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
-                if self.board[y][x] == '0':
-                    pass
-                elif self.board[y][x] == 'st':
-                    sprite = Environment('images/blocks/special/cave/start.png',
-                                         self.decgroup, self.allgroup,
-                                         x / 2, y / 2, self.cell_size * 2)
-                    self.spawn = x, y
-                elif self.board[y][x] == 'en':
-                    sprite = Environment('images/blocks/special/cave/end/end1.png',
-                                         self.fingroup, self.allgroup,
-                                         x / 2, y / 2, self.cell_size * 2)
-                elif self.board[y][x] == '1':
-                    sprite = Environment('images/blocks/environment/1_stone_surface.png',
-                                         self.envgroup, self.allgroup, x, y,
-                                         self.cell_size)
-                elif self.board[y][x] == '2':
-                    sprite = Environment('images/blocks/environment/2_stone.png',
-                                         self.envgroup, self.allgroup, x, y,
-                                         self.cell_size)
-                elif self.board[y][x] == '3':
-                    sprite = Environment('images/blocks/environment/3_stone_corner.png',
-                                         self.envgroup, self.allgroup, x, y,
-                                         self.cell_size)
-                elif self.board[y][x] == '4':
-                    sprite = Environment('images/blocks/decor/4_moss.png',
-                                         self.decgroup, self.allgroup, x, y,
-                                         self.cell_size)
-                elif self.board[y][x] == '5':
-                    sprite = Environment('images/blocks/environment/5_stone_surface_moss.png',
-                                         self.envgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '6':
-                    sprite = Environment('images/blocks/decor/6_grass.png',
-                                         self.decgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '7':
-                    sprite = Environment('images/blocks/environment/7_stone_surface_grass.png',
-                                         self.envgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '8':
-                    sprite = Environment('images/blocks/environment/8_dead_bush.png',
-                                         self.decgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '9':
-                    sprite = Environment('images/blocks/environment/9_dirt.png',
-                                         self.envgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '10':
-                    sprite = Environment('images/blocks/danger/10_spikes.png',
-                                         self.dangroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '11':
-                    sprite = Environment('images/blocks/decor/11_lian_1.png',
-                                         self.decgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '12':
-                    sprite = Environment('images/blocks/decor/12_lian_2.png',
-                                         self.decgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '13':
-                    sprite = Environment('images/blocks/decor/13_lian_3.png',
-                                         self.decgroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '14':
-                    sprite = Environment('images/blocks/danger/14_small_spike.png',
-                                         self.dangroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == '15':
-                    sprite = Environment('images/blocks/special/15_jump_pad.png',
-                                         self.jumpadgr, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == 't1':
-                    sprite = Environment('images/turret/turret_base.png',
-                                         self.dangroup, self.allgroup,
-                                         x, y, self.cell_size)
-                elif self.board[y][x] == 't2':
-                    sprite = Turret('images/turret/turret_cannon.png', self.dangroup, self.allgroup, x, y,
-                                    self.cell_size)
-                    if 'turrets' in objects:
-                        objects['turrets'].append(sprite)
-                    else:
-                        objects['turrets'] = [sprite]
+                for i in self.board[y][x].split('n'):
+                    if self.board[y][x] == '0':
+                        pass
+                    elif i == 'st':
+                        sprite = Environment('images/blocks/special/cave/start.png',
+                                             self.decgroup, self.allgroup,
+                                             x / 2, y / 2, self.cell_size * 2)
+                        self.spawn = x, y
+                    elif i == 'en':
+                        sprite = Environment('images/blocks/special/cave/end/end1.png',
+                                             self.fingroup, self.allgroup,
+                                             x / 2, y / 2, self.cell_size * 2)
+                    elif i == '1':
+                        sprite = Environment('images/blocks/environment/1_stone_surface.png',
+                                             self.envgroup, self.allgroup, x, y,
+                                             self.cell_size)
+                    elif i == '2':
+                        sprite = Environment('images/blocks/environment/2_stone.png',
+                                             self.envgroup, self.allgroup, x, y,
+                                             self.cell_size)
+                    elif i == '3':
+                        sprite = Environment('images/blocks/environment/3_stone_corner.png',
+                                             self.envgroup, self.allgroup, x, y,
+                                             self.cell_size)
+                    elif i == '4':
+                        sprite = Environment('images/blocks/decor/4_moss.png',
+                                             self.decgroup, self.allgroup, x, y,
+                                             self.cell_size)
+                    elif i == '5':
+                        sprite = Environment('images/blocks/environment/5_stone_surface_moss.png',
+                                             self.envgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '6':
+                        sprite = Environment('images/blocks/decor/6_grass.png',
+                                             self.decgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '7':
+                        sprite = Environment('images/blocks/environment/7_stone_surface_grass.png',
+                                             self.envgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '8':
+                        sprite = Environment('images/blocks/environment/8_dead_bush.png',
+                                             self.decgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '9':
+                        sprite = Environment('images/blocks/environment/9_dirt.png',
+                                             self.envgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '10':
+                        sprite = Environment('images/blocks/danger/10_spikes.png',
+                                             self.dangroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '11':
+                        sprite = Environment('images/blocks/decor/11_lian_1.png',
+                                             self.decgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '12':
+                        sprite = Environment('images/blocks/decor/12_lian_2.png',
+                                             self.decgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '13':
+                        sprite = Environment('images/blocks/decor/13_lian_3.png',
+                                             self.decgroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '14':
+                        sprite = Environment('images/blocks/danger/14_small_spike.png',
+                                             self.dangroup, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i == '15':
+                        sprite = Environment('images/blocks/special/15_jump_pad.png',
+                                             self.jumpadgr, self.allgroup,
+                                             x, y, self.cell_size)
+                    elif i[:2] == '16':
+                        sprite = Saw('images/blocks/danger/16_saw_short.png',
+                                             self.dangroup, self.allgroup,
+                                             x, y, self.cell_size, 3, int(i[-1]))
+                    elif i[:2] == '17':
+                        sprite = Saw('images/blocks/danger/17_saw_long.png',
+                                             self.dangroup, self.allgroup,
+                                             x, y, self.cell_size, 5, int(i[-1]))
+                    # elif i == 't1':
+                    #     sprite = Environment('images/turret/camera_base.png',
+                    #                          self.dangroup, self.allgroup,
+                    #                          x, y, self.cell_size)
+                    # elif i == 't2':
+                    #     sprite = Turret('images/turret/turret_cannon.png', self.decgroup, self.allgroup, x, y,
+                    #                     self.cell_size)
+                    #     if 'turrets' in objects:
+                    #         objects['turrets'].append(sprite)
+                    #     else:
+                    #         objects['turrets'] = [sprite]
 
 class Player(pygame.sprite.Sprite):
     def __init__(self, group, allgroup, healthgrp, x, y, width, height, cell_size=16):
@@ -232,7 +244,7 @@ class Player(pygame.sprite.Sprite):
         for i in dang:
             if pygame.sprite.collide_mask(player, i):
                 if self.live_frames <= 0:
-                    self.health -= 13
+                    self.health -= 26
                     self.live_frames = 30
                 self.y_speed = -500
         if not self.on_surf:
@@ -286,6 +298,13 @@ class Player(pygame.sprite.Sprite):
         spd1 = (3.125 * self.cell_size) // 1
         if self.on_surf:
             if self.y_speed != 4 * spd1:
+                pygame.mixer.init()
+                try:
+                    sound = pygame.mixer.Sound('music_and_sounds/jump.mp3')
+                    sound.set_volume(0.2)
+                    pygame.mixer.Channel(1).play(sound)
+                except pygame.error as e:
+                    print(f"Ошибка при загрузке или проигрывании музыки: {e}")
                 self.y_speed = -4 * spd1
 
 
@@ -334,6 +353,12 @@ class HealthBar(pygame.sprite.Sprite):
         self.image = self.eight
 
     def update(self, health):
+        try:
+            sound = pygame.mixer.Sound('music_and_sounds/damage.mp3')
+            sound.set_volume(0.1)
+            pygame.mixer.Channel(3).play(sound, 0)
+        except pygame.error as e:
+            print(f"Ошибка при загрузке или проигрывании музыки: {e}")
         if health == 0:
             self.image = self.zero
         elif 0 < health < 12.5:
@@ -492,3 +517,25 @@ class Button:
             if event.button == 1 and self.rect.collidepoint(event.pos):
                 return self.action
         return None
+
+
+class Saw(pygame.sprite.Sprite):
+    def __init__(self, picture, group, grp2, x, y, cell_size=64, length=3, speed=5, additional_group=None):
+        self.degrees = 90
+        self.speed = speed
+        self.image = functions.load_image(picture)
+        self.image = pygame.transform.scale(self.image, (cell_size * length, cell_size))
+        self.original_image = pygame.transform.scale(self.image, (cell_size * length, cell_size))
+        if additional_group:
+            super().__init__(group, grp2, additional_group)
+        else:
+            super().__init__(group, grp2)
+        self.startrect = pygame.Rect(x * cell_size - cell_size * (length / 2 - 0.5), y * cell_size, cell_size, cell_size)
+        self.rect = pygame.Rect(x * cell_size - cell_size * (length / 2 - 0.5), y * cell_size, cell_size, cell_size)
+        self.mask = pygame.mask.from_surface(self.image)
+
+    def update(self):
+        self.image = pygame.transform.rotate(self.original_image, self.degrees)
+        self.rect = self.image.get_rect(center=self.rect.center)
+        self.mask = pygame.mask.from_surface(self.image)
+        self.degrees += self.speed

@@ -257,11 +257,10 @@ def main(level):
     screen = pygame.display.set_mode(size)
     clock = pygame.time.Clock()
     pygame.display.set_caption("Ketdventure")
-    running = True
     dt = 0
     fps = 120
     objects = {}
-    board.render(screen, objects)
+    running = board.render(screen, objects)
     player = classes.Player(player_sp, all_sp, health_sp, board.spawn[0], board.spawn[1],
                             width, height, CELL_SIZE)
     camera = classes.Camera(width, height, CELL_SIZE)

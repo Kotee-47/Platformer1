@@ -1,7 +1,5 @@
-import pygame
 from data import classes
-from data import functions
-from config import *
+from data.config import *
 from copy import deepcopy
 import sys
 from data.classes import Button
@@ -11,7 +9,9 @@ from data.classes import Slider
 def menu():
     pygame.mixer.init()
     try:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('music_and_sounds/prologue.mp3'), -1)
+        sound = pygame.mixer.Sound('music_and_sounds/prologue.mp3')
+        sound.set_volume(0.2)
+        pygame.mixer.Channel(0).play(sound, -1)
     except pygame.error as e:
         print(f"Ошибка при загрузке или проигрывании музыки: {e}")
 
@@ -123,7 +123,9 @@ def level_menu():
     pygame.font.init()
     pygame.mixer.init()
     try:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('music_and_sounds/awake.mp3'), -1)
+        sound = pygame.mixer.Sound('music_and_sounds/awake.mp3')
+        sound.set_volume(0.2)
+        pygame.mixer.Channel(0).play(sound, -1)
     except pygame.error as e:
         print(f"Ошибка при загрузке или проигрывании музыки: {e}")
     # Шрифты
@@ -134,7 +136,7 @@ def level_menu():
     title_text = font.render("Ketdventure", True, 'black')
 
     # Количество уровней
-    levels = 10
+    levels = 15
 
     # Создание кнопок
     buttons = []
@@ -151,7 +153,12 @@ def level_menu():
                        (main, 'files/levels/chapt1/level7.txt'),
                        (main, 'files/levels/chapt1/level8.txt'),
                        (main, 'files/levels/chapt1/level9.txt'),
-                       (main, 'files/levels/chapt1/level10.txt')]
+                       (main, 'files/levels/chapt1/level10.txt'),
+                       (main, 'files/levels/chapt1/level11.txt'),
+                       (main, 'files/levels/chapt1/level12.txt'),
+                       (main, 'files/levels/chapt1/level13.txt'),
+                       (main, 'files/levels/chapt1/level14.txt'),
+                       (main, 'files/levels/chapt1/level15.txt')]
 
     # Расположение кнопок в два ряда
     for i in range(levels):
@@ -179,8 +186,12 @@ def level_menu():
             button = button_data["rect"]
             color = button_data["color"]
             pygame.draw.rect(screen, color, button)
-            level_text = button_font.render(f"Уровень {buttons.index(button_data) + 1}",
-                                            True, 'black')
+            if buttons.index(button_data) + 1 != 15:
+                level_text = button_font.render(f"Уровень {buttons.index(button_data) + 1}",
+                                                True, 'black')
+            else:
+                level_text = button_font.render(f"Тест поле",
+                                                True, 'black')
             screen.blit(level_text, (button.x + 10, button.y + 15))
 
         # Отображение кнопки выхода
@@ -221,7 +232,9 @@ def main(level):
     pygame.init()
     pygame.mixer.init()
     try:
-        pygame.mixer.Channel(0).play(pygame.mixer.Sound('music_and_sounds/first-steps.mp3'), -1)
+        sound = pygame.mixer.Sound('music_and_sounds/first-steps.mp3')
+        sound.set_volume(0.2)
+        pygame.mixer.Channel(0).play(sound, -1)
     except pygame.error as e:
         print(f"Ошибка при загрузке или проигрывании музыки: {e}")
     all_sp = deepcopy(ALL_SPRITES)
@@ -295,14 +308,17 @@ def main(level):
                         if key[pygame.K_ESCAPE]:
                             pause = True
 
-                    # screen.fill("#030303")
-                    if 'turrets' in objects.keys():
-                        for obj in objects['turrets']:
-                            obj.update(player.rect.x, player.rect.y)
+                    #  screen.fill("#030303")
+                    # if 'turrets' in objects.keys():
+                    #     for obj in objects['turrets']:
+                    #         obj.update(player.rect.x, player.rect.y)
 
                     camera.update(player)
                     for sprite in all_sp:
                         camera.apply(sprite)
+
+                    for i in dang_sp:
+                        i.update()
 
                     for i in player_sp:
                         if pygame.sprite.spritecollideany(i, finish_sp):
@@ -310,6 +326,12 @@ def main(level):
                             if finish_c > 50:
                                 finished = True
                         if pygame.sprite.spritecollideany(i, jump_sp):
+                            try:
+                                sound = pygame.mixer.Sound('music_and_sounds/jump.mp3')
+                                sound.set_volume(0.2)
+                                pygame.mixer.Channel(1).play(sound)
+                            except pygame.error as e:
+                                print(f"Ошибка при загрузке или проигрывании музыки: {e}")
                             player.y_speed = -1200
 
                     backgr_sp.draw(screen)
@@ -324,7 +346,7 @@ def main(level):
                     health_sp.draw(screen)
 
                     for i in env_sp:
-                        if i.rect.y < -1500:
+                        if i.rect.y < -(len(board.board) * 64):
                             ded = True
                         break
 

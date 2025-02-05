@@ -46,7 +46,7 @@ class Board:
         self.screen = screen
         for x in range(self.width):
             for y in range(self.height):
-                for i in self.board[y][x].split('n'):
+                for i in self.board[y][x].split('u'):
                     if self.board[y][x] == '0':
                         pass
                     elif i == 'st':
